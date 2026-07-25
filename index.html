@@ -3,62 +3,131 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Baby Shower</title>
+    <title>Baby Shower de Ketsia</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <!-- Pantalla 1: El Sobre -->
-    <div id="pantalla-sobre" class="pantalla activa">
-        <div class="ilustracion-sobre">
-            <!-- Aquí colocarás tu SVG estilo Winnie the Pooh -->
-            <h2>¡Tienes una carta!</h2>
-        </div>
-        <input type="text" id="nombre-invitado" placeholder="Tu nombre (Ej. Javi)">
-        <button id="btn-abrir">Abrir Invitación</button>
-    </div>
+    <!-- =========================================================
+         FASE 1
+         Contiene: carta inicial, captura del nombre y carga.
+         Los cuadros rojos son marcadores temporales para imágenes.
+    ========================================================== -->
+    <main id="fase-uno" class="fase fase--activa" aria-live="polite">
+        <!-- PASO 1: aparece automáticamente después de 2 segundos -->
+        <section id="paso-carta" class="paso paso-carta" aria-label="Abrir invitación">
+            <p id="texto-tienes-invitacion" class="texto-carta">
+                Tienes una invitación
+            </p>
 
-    <!-- Agrega la etiqueta de audio antes de cerrar el body -->
+            <!-- Sustituye este cuadro con tu imagen de carta en assets/img -->
+            <button
+                id="carta-inicial"
+                class="grafico-temporal grafico-carta"
+                type="button"
+                aria-label="Toca la carta para abrir la invitación"
+            >
+                <span>CARTA</span>
+            </button>
+
+            <p class="indicacion-toque">Toca la carta para continuar</p>
+        </section>
+
+        <!-- PASO 2: sobre trasero + papel delantero para escribir el nombre -->
+        <section id="paso-nombre" class="paso paso-nombre" aria-label="Escribe tu nombre">
+            <div class="composicion-nombre">
+                <!-- Sustituye este cuadro con el gráfico trasero -->
+                <div
+                    id="grafico-sobre-trasero"
+                    class="grafico-temporal grafico-sobre-trasero"
+                    aria-hidden="true"
+                >
+                    SOBRE
+                </div>
+
+                <!-- Sustituye este cuadro con el gráfico del papel -->
+                <div id="grafico-papel" class="grafico-temporal grafico-papel">
+                    <label for="nombre-invitado">Invitado:</label>
+                    <input
+                        id="nombre-invitado"
+                        type="text"
+                        autocomplete="name"
+                        maxlength="60"
+                        placeholder="Escribe tu nombre"
+                    >
+
+                    <button id="btn-enviar-nombre" type="button" disabled>
+                        Enviar →
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- PASO 3: simulación visual mientras se registra en Firebase -->
+        <section id="paso-carga" class="paso paso-carga" aria-label="Consultando invitados">
+            <div class="cargador-circular" aria-hidden="true"></div>
+            <p id="estado-consulta" role="status">Consultando invitados...</p>
+        </section>
+    </main>
+
+    <!-- =========================================================
+         FASE 2
+         Globos temporales + panel gráfico con la información.
+    ========================================================== -->
+    <main id="fase-dos" class="fase fase--oculta" aria-live="polite">
+        <div class="globos-temporales" aria-hidden="true">
+            <!-- Sustituye cada cuadro por una imagen de globo -->
+            <div class="grafico-temporal globo globo--1">GLOBO</div>
+            <div class="grafico-temporal globo globo--2">GLOBO</div>
+            <div class="grafico-temporal globo globo--3">GLOBO</div>
+            <div class="grafico-temporal globo globo--4">GLOBO</div>
+            <div class="grafico-temporal globo globo--5">GLOBO</div>
+        </div>
+
+        <!-- Rectángulo gráfico temporal que cubre gran parte del fondo -->
+        <section id="panel-invitacion" class="grafico-temporal panel-invitacion">
+            <p class="etiqueta-temporal">RECTÁNGULO GRÁFICO</p>
+            <p class="subtitulo-evento">BABY SHOWER</p>
+            <h1>Ketsia</h1>
+            <h2 id="saludo-invitado">¡Hola!</h2>
+
+            <p class="mensaje-principal">
+                Acompáñanos a celebrar la llegada de nuestra pequeña.
+            </p>
+
+            <div id="contenedor-contador" aria-label="Cuenta regresiva">
+                <div class="bloque-tiempo">
+                    <span id="dias">00</span>
+                    <p>Días</p>
+                </div>
+                <div class="bloque-tiempo">
+                    <span id="horas">00</span>
+                    <p>Horas</p>
+                </div>
+                <div class="bloque-tiempo">
+                    <span id="minutos">00</span>
+                    <p>Min</p>
+                </div>
+                <div class="bloque-tiempo">
+                    <span id="segundos">00</span>
+                    <p>Seg</p>
+                </div>
+            </div>
+
+            <div class="datos-evento">
+                <p>9 de agosto de 2026</p>
+                <p>3:00 p. m.</p>
+            </div>
+        </section>
+
+        <button id="btn-confirmar" type="button">
+            Confirmar asistencia
+        </button>
+    </main>
+
     <audio id="musica-fondo" loop>
-        <!-- Cambia "cancion.mp3" por el nombre real de tu archivo -->
         <source src="assets/cancion.mp3" type="audio/mpeg">
     </audio>
 
-<!-- Pantalla 2: La Invitación (Oculta al inicio) -->
-    <div id="pantalla-invitacion" class="pantalla oculta">
-        <!-- Textos Principales -->
-        <h3>BABY SHOWER</h3>
-        <h1>Ketsia</h1>
-        
-        <h2 id="saludo-invitado">¡Hola!</h2>
-        
-        <!-- Reloj Regresivo -->
-        <div id="contenedor-contador">
-            <div class="bloque-tiempo">
-                <span id="dias">00</span>
-                <p>Días</p>
-            </div>
-            <div class="bloque-tiempo">
-                <span id="horas">00</span>
-                <p>Horas</p>
-            </div>
-            <div class="bloque-tiempo">
-                <span id="minutos">00</span>
-                <p>Min</p>
-            </div>
-            <div class="bloque-tiempo">
-                <span id="segundos">00</span>
-                <p>Seg</p>
-            </div>
-        </div>
-
-        <div class="contenido-baby-shower">
-            <p>Acompáñanos a celebrar la llegada de nuestra pequeña.</p>
-        </div>
-
-        <button id="btn-confirmar">Confirmar Asistencia</button>
-    </div>
-
-    <!-- Importante: type="module" permite usar "import" en tu archivo JS -->
     <script type="module" src="app.js"></script>
 </body>
 </html>

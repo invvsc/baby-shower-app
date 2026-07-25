@@ -1,6 +1,11 @@
 :root {
-    --duracion-fase: 700ms;
-    --curva-fase: cubic-bezier(0.22, 1, 0.36, 1);
+    --rosa-fondo: #f8dce5;
+    --rosa-suave: #ffeef3;
+    --rojo-temporal: #d7193f;
+    --rojo-temporal-oscuro: #a90f2e;
+    --blanco: #ffffff;
+    --texto: #402d34;
+    --curva-suave: cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 * {
@@ -9,216 +14,641 @@
 
 html,
 body {
+    width: 100%;
     min-height: 100%;
 }
 
 body {
-    font-family: sans-serif;
-    background-color: #fdf5e6; /* Un tono cálido base */
     margin: 0;
     overflow: hidden;
+    font-family: Arial, Helvetica, sans-serif;
+    color: var(--texto);
+    background: var(--rosa-fondo);
 }
 
-/*
-   Las dos fases permanecen superpuestas para permitir el crossfade.
-   Ya no usamos display: none, porque display no puede animarse.
-*/
-.pantalla {
+button,
+input {
+    font: inherit;
+}
+
+button {
+    -webkit-tap-highlight-color: transparent;
+}
+
+/* ==============================================================
+   CONTENEDORES GENERALES
+============================================================== */
+.fase {
     position: fixed;
     inset: 0;
     width: 100%;
     min-height: 100vh;
     min-height: 100dvh;
-    padding: 24px;
-    overflow-y: auto;
-
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    text-align: center;
-
-    opacity: 0;
-    visibility: hidden;
-    pointer-events: none;
-    transform: translateY(14px) scale(0.99);
-    transition:
-        opacity var(--duracion-fase) ease,
-        transform var(--duracion-fase) var(--curva-fase),
-        visibility 0s linear var(--duracion-fase);
+    overflow: hidden;
+    transition: opacity 700ms ease;
 }
 
-/* Estado estable de la fase visible */
-.pantalla.activa {
+.fase--activa {
     z-index: 2;
     opacity: 1;
     visibility: visible;
     pointer-events: auto;
-    transform: translateY(0) scale(1);
-    transition-delay: 0s;
+    transition:
+        opacity 700ms ease,
+        visibility 0s;
 }
 
-/* Estado estable de la fase oculta */
-.pantalla.oculta {
+.fase--oculta {
     z-index: 0;
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    transition:
+        opacity 700ms ease,
+        visibility 0s linear 700ms;
+}
+
+.fase--saliendo {
+    opacity: 0;
+    visibility: visible;
+    pointer-events: none;
+}
+
+/* Todos los gráficos temporales son rojos para identificarlos. */
+.grafico-temporal {
+    background: var(--rojo-temporal);
+    color: var(--blanco);
+    border: 3px dashed rgba(255, 255, 255, 0.72);
+    box-shadow: 0 18px 40px rgba(107, 14, 41, 0.22);
+}
+
+/* ==============================================================
+   FASE 1 — PASOS
+============================================================== */
+#fase-uno {
+    display: grid;
+    place-items: center;
+    padding: 24px;
+    background: var(--rosa-fondo);
+}
+
+.paso {
+    position: absolute;
+    inset: 0;
+    display: grid;
+    place-items: center;
+    padding: 24px;
     opacity: 0;
     visibility: hidden;
     pointer-events: none;
 }
 
-/* Estado inicial de la fase 2, antes de activar su fade in */
-.pantalla.preparando-entrada {
-    z-index: 3;
-    opacity: 0;
-    visibility: visible;
-    pointer-events: none;
-    transform: translateY(18px) scale(0.99);
-    transition: none;
-}
-
-/* Fade in de la fase 2 */
-.pantalla.entrando {
-    z-index: 3;
+.paso--visible {
     opacity: 1;
     visibility: visible;
-    pointer-events: none;
-    transform: translateY(0) scale(1);
-    transition-delay: 0s;
+    pointer-events: auto;
 }
 
-/* Fade out de la fase 1 */
-.pantalla.saliendo {
-    z-index: 1;
+/* PASO 1: carta */
+.paso-carta {
+    align-content: center;
+    gap: 18px;
+    text-align: center;
+}
+
+.texto-carta,
+.indicacion-toque {
+    margin: 0;
     opacity: 0;
+}
+
+.texto-carta {
+    order: 1;
+    font-size: clamp(1.55rem, 6vw, 2.6rem);
+    font-weight: 700;
+    letter-spacing: 0.02em;
+    transform: translateY(12px);
+}
+
+.grafico-carta {
+    order: 2;
+    width: min(74vw, 310px);
+    aspect-ratio: 1.42;
+    border-radius: 18px;
+    cursor: pointer;
+    opacity: 0;
+    transform: scale(0.08);
+}
+
+.grafico-carta span {
+    font-size: 1.1rem;
+    font-weight: 800;
+    letter-spacing: 0.12em;
+}
+
+.indicacion-toque {
+    order: 3;
+    font-size: 0.92rem;
+    transform: translateY(8px);
+}
+
+/* La carta entra desde pequeña hasta su tamaño normal. */
+.paso-carta.paso--visible .grafico-carta {
+    animation:
+        entrada-carta 900ms var(--curva-suave) forwards,
+        flotar-carta 2.3s ease-in-out 900ms infinite;
+}
+
+/* El texto aparece después de la carta. */
+.paso-carta.paso--visible .texto-carta {
+    animation: aparecer-texto 600ms ease 850ms forwards;
+}
+
+.paso-carta.paso--visible .indicacion-toque {
+    animation: aparecer-texto 500ms ease 1250ms forwards;
+}
+
+.paso-carta.paso--cerrando {
+    animation: cerrar-paso 500ms ease forwards;
+    pointer-events: none;
+}
+
+/* PASO 2: nombre */
+.paso-nombre {
+    text-align: center;
+}
+
+.composicion-nombre {
+    position: relative;
+    width: min(92vw, 430px);
+    height: min(72vh, 510px);
+    min-height: 390px;
+}
+
+.grafico-sobre-trasero {
+    position: absolute;
+    left: 50%;
+    bottom: 8%;
+    width: 92%;
+    height: 55%;
+    display: grid;
+    place-items: end center;
+    padding-bottom: 24px;
+    border-radius: 24px;
+    font-weight: 800;
+    letter-spacing: 0.12em;
+    opacity: 0;
+    transform: translate(-50%, 80px) scale(0.92);
+}
+
+.grafico-papel {
+    position: absolute;
+    left: 50%;
+    top: 4%;
+    width: 78%;
+    min-height: 67%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 15px;
+    padding: 34px 24px;
+    border-radius: 20px;
+    opacity: 0;
+    transform: translate(-50%, 80px) scale(0.94);
+}
+
+.grafico-papel label {
+    font-size: clamp(1.25rem, 5vw, 1.75rem);
+    font-weight: 700;
+}
+
+#nombre-invitado {
+    width: 100%;
+    padding: 14px 16px;
+    border: 0;
+    border-radius: 12px;
+    outline: 3px solid transparent;
+    color: var(--texto);
+    background: rgba(255, 255, 255, 0.94);
+    text-align: center;
+}
+
+#nombre-invitado:focus {
+    outline-color: rgba(255, 255, 255, 0.56);
+}
+
+#btn-enviar-nombre {
+    align-self: flex-end;
+    padding: 8px 0;
+    border: 0;
+    color: var(--blanco);
+    background: transparent;
+    font-weight: 800;
+    cursor: pointer;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateX(-10px);
+    transition:
+        opacity 250ms ease,
+        transform 250ms ease,
+        visibility 0s linear 250ms;
+}
+
+#btn-enviar-nombre.btn--habilitado {
+    opacity: 1;
     visibility: visible;
-    pointer-events: none;
-    transform: translateY(-14px) scale(0.99);
+    transform: translateX(0);
     transition-delay: 0s;
 }
 
-/* Entrada escalonada de los nuevos elementos gráficos/textuales */
-#pantalla-invitacion.preparando-entrada > :not(#btn-confirmar) {
+#btn-enviar-nombre:disabled {
+    cursor: default;
+}
+
+.paso-nombre.paso--visible .grafico-sobre-trasero {
+    animation: subir-grafico 700ms var(--curva-suave) forwards;
+}
+
+.paso-nombre.paso--visible .grafico-papel {
+    animation: subir-grafico-papel 800ms var(--curva-suave) 180ms forwards;
+}
+
+.paso-nombre.paso--cerrando .composicion-nombre {
+    animation: cerrar-paso 450ms ease forwards;
+}
+
+/* PASO 3: carga */
+.paso-carga {
+    align-content: center;
+    gap: 24px;
+    text-align: center;
+}
+
+.paso-carga.paso--visible {
+    animation: aparecer-carga 450ms ease both;
+}
+
+.cargador-circular {
+    width: 72px;
+    height: 72px;
+    border: 7px solid rgba(215, 25, 63, 0.18);
+    border-top-color: var(--rojo-temporal);
+    border-radius: 50%;
+    animation: girar 850ms linear infinite;
+}
+
+#estado-consulta {
+    min-height: 1.4em;
+    margin: 0;
+    font-size: clamp(1.1rem, 4.5vw, 1.45rem);
+    font-weight: 700;
+}
+
+#estado-consulta.estado--encontrado {
+    animation: pulso-encontrado 500ms var(--curva-suave);
+}
+
+#estado-consulta.estado--error {
+    color: #8f132d;
+}
+
+/* ==============================================================
+   FASE 2 — GLOBOS Y PANEL
+============================================================== */
+#fase-dos {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 24px 18px 100px;
+    background: var(--rosa-fondo);
+}
+
+.globos-temporales {
+    position: absolute;
+    inset: 0;
+    overflow: hidden;
+    pointer-events: none;
+}
+
+.globo {
+    position: absolute;
+    bottom: -220px;
+    width: 92px;
+    height: 128px;
+    display: grid;
+    place-items: center;
+    border-radius: 50% 50% 46% 46%;
+    font-size: 0.65rem;
+    font-weight: 800;
     opacity: 0;
-    transform: translateY(18px);
 }
 
-#pantalla-invitacion.entrando > :not(#btn-confirmar) {
-    animation: revelar-elemento 600ms var(--curva-fase) both;
+.globo::after {
+    content: "";
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    width: 2px;
+    height: 150px;
+    background: var(--rojo-temporal-oscuro);
 }
 
-#pantalla-invitacion.entrando > h3 {
-    animation-delay: 80ms;
-}
+.globo--1 { left: -18px; transform: rotate(-9deg); }
+.globo--2 { left: 18%; width: 72px; height: 105px; }
+.globo--3 { right: 18%; width: 78px; height: 112px; }
+.globo--4 { right: -12px; transform: rotate(10deg); }
+.globo--5 { left: 50%; width: 64px; height: 92px; transform: translateX(-50%); }
 
-#pantalla-invitacion.entrando > h1 {
-    animation-delay: 150ms;
-}
-
-#pantalla-invitacion.entrando > #saludo-invitado {
-    animation-delay: 220ms;
-}
-
-#pantalla-invitacion.entrando > #contenedor-contador {
-    animation-delay: 290ms;
-}
-
-#pantalla-invitacion.entrando > .contenido-baby-shower {
-    animation-delay: 360ms;
-}
-
-#pantalla-invitacion.preparando-entrada > #btn-confirmar {
+.panel-invitacion {
+    position: relative;
+    z-index: 2;
+    width: min(94vw, 620px);
+    max-height: calc(100dvh - 138px);
+    overflow-y: auto;
+    padding: clamp(26px, 7vw, 48px) clamp(20px, 6vw, 42px);
+    border-radius: 30px;
+    text-align: center;
     opacity: 0;
+    transform: translateY(34px) scale(0.97);
 }
 
-#pantalla-invitacion.entrando > #btn-confirmar {
-    animation: revelar-boton 500ms ease 430ms both;
+.etiqueta-temporal {
+    margin: 0 0 14px;
+    font-size: 0.65rem;
+    font-weight: 800;
+    letter-spacing: 0.15em;
+    opacity: 0.75;
 }
 
-@keyframes revelar-elemento {
-    from {
+.subtitulo-evento,
+.panel-invitacion h1,
+#saludo-invitado,
+.mensaje-principal,
+#contenedor-contador,
+.datos-evento {
+    opacity: 0;
+    transform: translateY(16px);
+}
+
+.subtitulo-evento {
+    margin: 0;
+    font-size: 0.9rem;
+    letter-spacing: 0.24em;
+}
+
+.panel-invitacion h1 {
+    margin: 8px 0;
+    font-size: clamp(3rem, 14vw, 5.6rem);
+    line-height: 0.95;
+}
+
+#saludo-invitado {
+    margin: 18px 0 8px;
+    font-size: clamp(1.35rem, 5vw, 2rem);
+}
+
+.mensaje-principal {
+    max-width: 38ch;
+    margin: 10px auto 20px;
+    line-height: 1.5;
+}
+
+#contenedor-contador {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(54px, 1fr));
+    gap: 8px;
+    margin: 22px 0;
+}
+
+.bloque-tiempo {
+    padding: 10px 5px;
+    border-radius: 12px;
+    color: var(--texto);
+    background: rgba(255, 255, 255, 0.92);
+}
+
+.bloque-tiempo span {
+    display: block;
+    font-size: clamp(1.25rem, 6vw, 2rem);
+    font-weight: 800;
+}
+
+.bloque-tiempo p {
+    margin: 3px 0 0;
+    font-size: 0.68rem;
+    text-transform: uppercase;
+}
+
+.datos-evento {
+    font-weight: 700;
+}
+
+.datos-evento p {
+    margin: 6px 0;
+}
+
+#btn-confirmar {
+    position: fixed;
+    z-index: 5;
+    left: 50%;
+    bottom: max(20px, env(safe-area-inset-bottom));
+    transform: translate(-50%, 24px);
+    min-width: min(86vw, 330px);
+    padding: 15px 28px;
+    border: 0;
+    border-radius: 999px;
+    color: var(--texto);
+    background: var(--blanco);
+    box-shadow: 0 12px 30px rgba(93, 24, 46, 0.25);
+    font-weight: 800;
+    cursor: pointer;
+    opacity: 0;
+    pointer-events: none;
+}
+
+/* Secuencia de entrada de fase 2. */
+#fase-dos.fase-dos--entrando .globo--1 {
+    animation: subir-globo 1.35s var(--curva-suave) 0ms forwards;
+}
+
+#fase-dos.fase-dos--entrando .globo--2 {
+    animation: subir-globo 1.45s var(--curva-suave) 130ms forwards;
+}
+
+#fase-dos.fase-dos--entrando .globo--3 {
+    animation: subir-globo 1.4s var(--curva-suave) 250ms forwards;
+}
+
+#fase-dos.fase-dos--entrando .globo--4 {
+    animation: subir-globo 1.5s var(--curva-suave) 360ms forwards;
+}
+
+#fase-dos.fase-dos--entrando .globo--5 {
+    animation: subir-globo 1.25s var(--curva-suave) 470ms forwards;
+}
+
+#fase-dos.fase-dos--entrando .panel-invitacion {
+    animation: mostrar-panel 800ms var(--curva-suave) 1150ms forwards;
+}
+
+#fase-dos.fase-dos--entrando .subtitulo-evento {
+    animation: revelar-contenido 550ms ease 1500ms forwards;
+}
+
+#fase-dos.fase-dos--entrando .panel-invitacion h1 {
+    animation: revelar-contenido 550ms ease 1600ms forwards;
+}
+
+#fase-dos.fase-dos--entrando #saludo-invitado {
+    animation: revelar-contenido 550ms ease 1700ms forwards;
+}
+
+#fase-dos.fase-dos--entrando .mensaje-principal {
+    animation: revelar-contenido 550ms ease 1800ms forwards;
+}
+
+#fase-dos.fase-dos--entrando #contenedor-contador {
+    animation: revelar-contenido 550ms ease 1900ms forwards;
+}
+
+#fase-dos.fase-dos--entrando .datos-evento {
+    animation: revelar-contenido 550ms ease 2000ms forwards;
+}
+
+#fase-dos.fase-dos--entrando #btn-confirmar {
+    animation: mostrar-boton 550ms var(--curva-suave) 2350ms forwards;
+}
+
+/* ==============================================================
+   ANIMACIONES
+============================================================== */
+@keyframes entrada-carta {
+    0% {
         opacity: 0;
-        transform: translateY(18px);
+        transform: scale(0.08) rotate(-7deg);
     }
+    70% {
+        opacity: 1;
+        transform: scale(1.06) rotate(1deg);
+    }
+    100% {
+        opacity: 1;
+        transform: scale(1) rotate(0deg);
+    }
+}
+
+@keyframes flotar-carta {
+    0%, 100% { transform: translateY(0) rotate(-1deg); }
+    50% { transform: translateY(-10px) rotate(1deg); }
+}
+
+@keyframes aparecer-texto {
     to {
         opacity: 1;
         transform: translateY(0);
     }
 }
 
-@keyframes revelar-boton {
-    from { opacity: 0; }
-    to { opacity: 1; }
-}
-
-/*
-   ESTILOS DEL BOTÓN FLOTANTE
-   Por defecto: diseño para celulares.
-*/
-#btn-confirmar {
-    position: fixed;
-    bottom: 20px;
-    left: 50%;
-    transform: translateX(-50%);
-
-    background-color: #ffb6c1;
-    color: #333;
-    padding: 15px 30px;
-    border: none;
-    border-radius: 30px;
-    font-size: 16px;
-    font-weight: bold;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-    cursor: pointer;
-    z-index: 1000;
-}
-
-/* Diseño para computadoras */
-@media (min-width: 768px) {
-    #btn-confirmar {
-        left: auto;
-        transform: none;
-        right: 30px;
-        bottom: 30px;
+@keyframes cerrar-paso {
+    to {
+        opacity: 0;
+        transform: scale(0.94);
     }
 }
 
-/* Estilos básicos para el reloj regresivo */
-#contenedor-contador {
-    display: flex;
-    justify-content: center;
-    gap: 15px;
-    margin: 20px 0;
+@keyframes subir-grafico {
+    to {
+        opacity: 1;
+        transform: translate(-50%, 0) scale(1);
+    }
 }
 
-.bloque-tiempo {
-    background-color: #fff;
-    padding: 10px 15px;
-    border-radius: 8px;
-    border: 2px solid #e0c097;
-    text-align: center;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+@keyframes subir-grafico-papel {
+    to {
+        opacity: 1;
+        transform: translate(-50%, 0) scale(1);
+    }
 }
 
-.bloque-tiempo span {
-    font-size: 24px;
-    font-weight: bold;
-    color: #d2691e;
+@keyframes aparecer-carga {
+    from { opacity: 0; transform: scale(0.9); }
+    to { opacity: 1; transform: scale(1); }
 }
 
-.bloque-tiempo p {
-    margin: 0;
-    font-size: 12px;
-    text-transform: uppercase;
-    color: #555;
+@keyframes girar {
+    to { transform: rotate(360deg); }
 }
 
-/* Respeta la preferencia de accesibilidad del sistema operativo */
+@keyframes pulso-encontrado {
+    50% { transform: scale(1.08); }
+}
+
+@keyframes subir-globo {
+    0% {
+        bottom: -220px;
+        opacity: 0;
+    }
+    65% {
+        opacity: 1;
+    }
+    100% {
+        bottom: 62%;
+        opacity: 1;
+    }
+}
+
+@keyframes mostrar-panel {
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+@keyframes revelar-contenido {
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes mostrar-boton {
+    to {
+        opacity: 1;
+        transform: translate(-50%, 0);
+        pointer-events: auto;
+    }
+}
+
+@media (min-width: 768px) {
+    .globo {
+        width: 120px;
+        height: 164px;
+    }
+
+    #btn-confirmar {
+        left: auto;
+        right: 30px;
+        min-width: 0;
+        transform: translateY(24px);
+    }
+
+    @keyframes mostrar-boton {
+        to {
+            opacity: 1;
+            transform: translateY(0);
+            pointer-events: auto;
+        }
+    }
+}
+
 @media (prefers-reduced-motion: reduce) {
-    .pantalla,
-    #pantalla-invitacion.entrando > :not(#btn-confirmar),
-    #pantalla-invitacion.entrando > #btn-confirmar {
-        animation: none !important;
+    *,
+    *::before,
+    *::after {
+        scroll-behavior: auto !important;
+        animation-duration: 1ms !important;
+        animation-delay: 0ms !important;
         transition-duration: 1ms !important;
-        transition-delay: 0s !important;
+        transition-delay: 0ms !important;
     }
 }
