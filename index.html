@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Baby Shower</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- Pantalla 1: El Sobre -->
+    <div id="pantalla-sobre" class="pantalla activa">
+        <div class="ilustracion-sobre">
+            <!-- Aquí colocarás tu SVG estilo Winnie the Pooh -->
+            <h2>¡Tienes una carta!</h2>
+        </div>
+        <input type="text" id="nombre-invitado" placeholder="Tu nombre (Ej. Javi)">
+        <button id="btn-abrir">Abrir Invitación</button>
+    </div>
+
+    <!-- Pantalla 2: La Invitación (Oculta al inicio) -->
+    <div id="pantalla-invitacion" class="pantalla oculta">
+        <h1 id="saludo-invitado">¡Hola!</h1>
+        
+        <div class="contenido-baby-shower">
+            <!-- Aquí maquetarás el contador, mesa de regalos, etc. -->
+            <p>Información del evento...</p>
+        </div>
+
+        <button id="btn-confirmar">Confirmar Asistencia</button>
+    </div>
+
+    <!-- Importante: type="module" permite usar "import" en tu archivo JS -->
+    <script type="module" src="app.js"></script>
+</body>
+</html>

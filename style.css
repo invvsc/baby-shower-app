@@ -1,0 +1,19 @@
+/* Lógica de pantallas */
+.oculta {
+    display: none;
+}
+
+.activa {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+}
+
+/* Estilos básicos rápidos */
+body {
+    font-family: sans-serif;
+    background-color: #fdf5e6; /* Un tono cálido base */
+    margin: 0;
+}
