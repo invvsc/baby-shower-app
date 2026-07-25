@@ -1,19 +1,224 @@
-/* Lógica de pantallas */
-.oculta {
-    display: none;
+:root {
+    --duracion-fase: 700ms;
+    --curva-fase: cubic-bezier(0.22, 1, 0.36, 1);
 }
 
-.activa {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    min-height: 100vh;
+* {
+    box-sizing: border-box;
 }
 
-/* Estilos básicos rápidos */
+html,
+body {
+    min-height: 100%;
+}
+
 body {
     font-family: sans-serif;
     background-color: #fdf5e6; /* Un tono cálido base */
     margin: 0;
+    overflow: hidden;
+}
+
+/*
+   Las dos fases permanecen superpuestas para permitir el crossfade.
+   Ya no usamos display: none, porque display no puede animarse.
+*/
+.pantalla {
+    position: fixed;
+    inset: 0;
+    width: 100%;
+    min-height: 100vh;
+    min-height: 100dvh;
+    padding: 24px;
+    overflow-y: auto;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    transform: translateY(14px) scale(0.99);
+    transition:
+        opacity var(--duracion-fase) ease,
+        transform var(--duracion-fase) var(--curva-fase),
+        visibility 0s linear var(--duracion-fase);
+}
+
+/* Estado estable de la fase visible */
+.pantalla.activa {
+    z-index: 2;
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+    transform: translateY(0) scale(1);
+    transition-delay: 0s;
+}
+
+/* Estado estable de la fase oculta */
+.pantalla.oculta {
+    z-index: 0;
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+}
+
+/* Estado inicial de la fase 2, antes de activar su fade in */
+.pantalla.preparando-entrada {
+    z-index: 3;
+    opacity: 0;
+    visibility: visible;
+    pointer-events: none;
+    transform: translateY(18px) scale(0.99);
+    transition: none;
+}
+
+/* Fade in de la fase 2 */
+.pantalla.entrando {
+    z-index: 3;
+    opacity: 1;
+    visibility: visible;
+    pointer-events: none;
+    transform: translateY(0) scale(1);
+    transition-delay: 0s;
+}
+
+/* Fade out de la fase 1 */
+.pantalla.saliendo {
+    z-index: 1;
+    opacity: 0;
+    visibility: visible;
+    pointer-events: none;
+    transform: translateY(-14px) scale(0.99);
+    transition-delay: 0s;
+}
+
+/* Entrada escalonada de los nuevos elementos gráficos/textuales */
+#pantalla-invitacion.preparando-entrada > :not(#btn-confirmar) {
+    opacity: 0;
+    transform: translateY(18px);
+}
+
+#pantalla-invitacion.entrando > :not(#btn-confirmar) {
+    animation: revelar-elemento 600ms var(--curva-fase) both;
+}
+
+#pantalla-invitacion.entrando > h3 {
+    animation-delay: 80ms;
+}
+
+#pantalla-invitacion.entrando > h1 {
+    animation-delay: 150ms;
+}
+
+#pantalla-invitacion.entrando > #saludo-invitado {
+    animation-delay: 220ms;
+}
+
+#pantalla-invitacion.entrando > #contenedor-contador {
+    animation-delay: 290ms;
+}
+
+#pantalla-invitacion.entrando > .contenido-baby-shower {
+    animation-delay: 360ms;
+}
+
+#pantalla-invitacion.preparando-entrada > #btn-confirmar {
+    opacity: 0;
+}
+
+#pantalla-invitacion.entrando > #btn-confirmar {
+    animation: revelar-boton 500ms ease 430ms both;
+}
+
+@keyframes revelar-elemento {
+    from {
+        opacity: 0;
+        transform: translateY(18px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes revelar-boton {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+/*
+   ESTILOS DEL BOTÓN FLOTANTE
+   Por defecto: diseño para celulares.
+*/
+#btn-confirmar {
+    position: fixed;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+
+    background-color: #ffb6c1;
+    color: #333;
+    padding: 15px 30px;
+    border: none;
+    border-radius: 30px;
+    font-size: 16px;
+    font-weight: bold;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    cursor: pointer;
+    z-index: 1000;
+}
+
+/* Diseño para computadoras */
+@media (min-width: 768px) {
+    #btn-confirmar {
+        left: auto;
+        transform: none;
+        right: 30px;
+        bottom: 30px;
+    }
+}
+
+/* Estilos básicos para el reloj regresivo */
+#contenedor-contador {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    margin: 20px 0;
+}
+
+.bloque-tiempo {
+    background-color: #fff;
+    padding: 10px 15px;
+    border-radius: 8px;
+    border: 2px solid #e0c097;
+    text-align: center;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.bloque-tiempo span {
+    font-size: 24px;
+    font-weight: bold;
+    color: #d2691e;
+}
+
+.bloque-tiempo p {
+    margin: 0;
+    font-size: 12px;
+    text-transform: uppercase;
+    color: #555;
+}
+
+/* Respeta la preferencia de accesibilidad del sistema operativo */
+@media (prefers-reduced-motion: reduce) {
+    .pantalla,
+    #pantalla-invitacion.entrando > :not(#btn-confirmar),
+    #pantalla-invitacion.entrando > #btn-confirmar {
+        animation: none !important;
+        transition-duration: 1ms !important;
+        transition-delay: 0s !important;
+    }
 }

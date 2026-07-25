@@ -17,13 +17,42 @@
         <button id="btn-abrir">Abrir Invitación</button>
     </div>
 
-    <!-- Pantalla 2: La Invitación (Oculta al inicio) -->
+    <!-- Agrega la etiqueta de audio antes de cerrar el body -->
+    <audio id="musica-fondo" loop>
+        <!-- Cambia "cancion.mp3" por el nombre real de tu archivo -->
+        <source src="assets/cancion.mp3" type="audio/mpeg">
+    </audio>
+
+<!-- Pantalla 2: La Invitación (Oculta al inicio) -->
     <div id="pantalla-invitacion" class="pantalla oculta">
-        <h1 id="saludo-invitado">¡Hola!</h1>
+        <!-- Textos Principales -->
+        <h3>BABY SHOWER</h3>
+        <h1>Ketsia</h1>
         
+        <h2 id="saludo-invitado">¡Hola!</h2>
+        
+        <!-- Reloj Regresivo -->
+        <div id="contenedor-contador">
+            <div class="bloque-tiempo">
+                <span id="dias">00</span>
+                <p>Días</p>
+            </div>
+            <div class="bloque-tiempo">
+                <span id="horas">00</span>
+                <p>Horas</p>
+            </div>
+            <div class="bloque-tiempo">
+                <span id="minutos">00</span>
+                <p>Min</p>
+            </div>
+            <div class="bloque-tiempo">
+                <span id="segundos">00</span>
+                <p>Seg</p>
+            </div>
+        </div>
+
         <div class="contenido-baby-shower">
-            <!-- Aquí maquetarás el contador, mesa de regalos, etc. -->
-            <p>Información del evento...</p>
+            <p>Acompáñanos a celebrar la llegada de nuestra pequeña.</p>
         </div>
 
         <button id="btn-confirmar">Confirmar Asistencia</button>
