@@ -16,6 +16,7 @@ html,
 body {
     width: 100%;
     min-height: 100%;
+    overscroll-behavior: none;
 }
 
 body {
@@ -74,7 +75,7 @@ button {
     pointer-events: none;
 }
 
-/* Todos los gráficos temporales son rojos para identificarlos. */
+/* Los gráficos temporales se muestran en rojo para identificarlos. */
 .grafico-temporal {
     background: var(--rojo-temporal);
     color: var(--blanco);
@@ -109,7 +110,6 @@ button {
     pointer-events: auto;
 }
 
-/* PASO 1: carta */
 .paso-carta {
     align-content: center;
     gap: 18px;
@@ -152,14 +152,12 @@ button {
     transform: translateY(8px);
 }
 
-/* La carta entra desde pequeña hasta su tamaño normal. */
 .paso-carta.paso--visible .grafico-carta {
     animation:
         entrada-carta 900ms var(--curva-suave) forwards,
         flotar-carta 2.3s ease-in-out 900ms infinite;
 }
 
-/* El texto aparece después de la carta. */
 .paso-carta.paso--visible .texto-carta {
     animation: aparecer-texto 600ms ease 850ms forwards;
 }
@@ -173,7 +171,6 @@ button {
     pointer-events: none;
 }
 
-/* PASO 2: nombre */
 .paso-nombre {
     text-align: center;
 }
@@ -277,7 +274,6 @@ button {
     animation: cerrar-paso 450ms ease forwards;
 }
 
-/* PASO 3: carga */
 .paso-carga {
     align-content: center;
     gap: 24px;
@@ -313,210 +309,427 @@ button {
 }
 
 /* ==============================================================
-   FASE 2 — GLOBOS Y PANEL
+   FASE 2 — TRANSICIÓN DE GLOBOS
 ============================================================== */
 #fase-dos {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 24px 18px 100px;
+    display: grid;
+    place-items: center;
+    padding: 0;
     background: var(--rosa-fondo);
 }
 
-.globos-temporales {
+.transicion-globos {
     position: absolute;
+    z-index: 40;
     inset: 0;
     overflow: hidden;
+    background: var(--rosa-fondo);
+    opacity: 1;
+    visibility: visible;
     pointer-events: none;
+    transition:
+        opacity 360ms ease,
+        visibility 0s linear 360ms;
 }
 
-.globo {
+.globo-transicion {
     position: absolute;
-    bottom: -220px;
-    width: 92px;
-    height: 128px;
+    left: var(--x);
+    top: 108%;
+    width: var(--tam);
+    height: calc(var(--tam) + 38px);
     display: grid;
     place-items: center;
     border-radius: 50% 50% 46% 46%;
-    font-size: 0.65rem;
+    font-size: clamp(0.5rem, 1.8vw, 0.72rem);
     font-weight: 800;
+    letter-spacing: 0.06em;
     opacity: 0;
+    transform: rotate(var(--giro));
+    will-change: transform, opacity;
 }
 
-.globo::after {
+.globo-transicion::before {
     content: "";
     position: absolute;
-    top: 100%;
+    top: calc(100% - 5px);
+    left: 50%;
+    width: 16px;
+    height: 14px;
+    background: var(--rojo-temporal-oscuro);
+    clip-path: polygon(50% 0, 100% 100%, 0 100%);
+    transform: translateX(-50%);
+}
+
+.globo-transicion::after {
+    content: "";
+    position: absolute;
+    top: calc(100% + 8px);
     left: 50%;
     width: 2px;
-    height: 150px;
+    height: 48vh;
     background: var(--rojo-temporal-oscuro);
+    transform: translateX(-50%);
 }
 
-.globo--1 { left: -18px; transform: rotate(-9deg); }
-.globo--2 { left: 18%; width: 72px; height: 105px; }
-.globo--3 { right: 18%; width: 78px; height: 112px; }
-.globo--4 { right: -12px; transform: rotate(10deg); }
-.globo--5 { left: 50%; width: 64px; height: 92px; transform: translateX(-50%); }
+.globo-transicion--fondo {
+    filter: brightness(0.9);
+}
 
-.panel-invitacion {
+#fase-dos.fase-dos--globos .globo-transicion {
+    animation: vuelo-globo var(--dur) linear var(--delay) both;
+}
+
+#fase-dos.globos--finalizados .transicion-globos {
+    opacity: 0;
+    visibility: hidden;
+}
+
+/* ==============================================================
+   FASE 2 — MAZO DE CINCO HOJAS
+============================================================== */
+.escena-cartas {
+    position: absolute;
+    z-index: 5;
+    inset: 0;
+    display: grid;
+    place-items: center;
+    padding:
+        max(20px, env(safe-area-inset-top))
+        14px
+        max(68px, calc(env(safe-area-inset-bottom) + 56px));
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+}
+
+#fase-dos.fase-dos--cartas .escena-cartas {
+    visibility: visible;
+    pointer-events: auto;
+    animation: mostrar-escena 700ms var(--curva-suave) forwards;
+}
+
+.mazo-cartas {
     position: relative;
-    z-index: 2;
-    width: min(94vw, 620px);
-    max-height: calc(100dvh - 138px);
-    overflow-y: auto;
-    padding: clamp(26px, 7vw, 48px) clamp(20px, 6vw, 42px);
-    border-radius: 30px;
-    text-align: center;
-    opacity: 0;
-    transform: translateY(34px) scale(0.97);
+    width: min(calc(100vw - 28px), 720px);
+    height: min(calc(100dvh - 94px), 760px);
+    min-height: 470px;
+    outline: none;
+    touch-action: none;
+    user-select: none;
+    -webkit-user-select: none;
+    cursor: pointer;
+    perspective: 1400px;
 }
 
-.etiqueta-temporal {
-    margin: 0 0 14px;
-    font-size: 0.65rem;
+.mazo-cartas:focus-visible {
+    outline: 3px solid rgba(169, 15, 46, 0.45);
+    outline-offset: 8px;
+}
+
+.carta-info {
+    --offset-x: 0px;
+    --offset-y: 0px;
+    --escala: 1;
+    --rotacion: 0deg;
+
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    padding: clamp(34px, 6vw, 62px) clamp(22px, 6vw, 58px) clamp(30px, 6vw, 52px);
+    border-radius: 0;
+    clip-path: polygon(
+        0 0,
+        100% 0,
+        100% 100%,
+        0 100%
+    );
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    transform:
+        translate3d(var(--offset-x), var(--offset-y), 0)
+        rotate(var(--rotacion))
+        scale(var(--escala));
+    transform-origin: 50% 12%;
+    transition:
+        transform 520ms var(--curva-suave),
+        filter 420ms ease,
+        opacity 240ms ease;
+    will-change: transform, opacity;
+}
+
+.carta-info::before,
+.carta-info::after {
+    content: "";
+    position: absolute;
+    z-index: -1;
+    width: 0;
+    height: 0;
+    border-style: solid;
+    opacity: 0.5;
+}
+
+.carta-info::before {
+    top: -1px;
+    right: -1px;
+    border-width: 0 0 26px 26px;
+    border-color: transparent transparent rgba(255, 255, 255, 0.25) transparent;
+}
+
+.carta-info::after {
+    bottom: -1px;
+    left: -1px;
+    border-width: 26px 26px 0 0;
+    border-color: rgba(169, 15, 46, 0.38) transparent transparent transparent;
+}
+
+.carta-info.carta--revelada {
+    opacity: 1;
+    visibility: visible;
+    pointer-events: none;
+}
+
+.carta-info.carta--activa {
+    pointer-events: auto;
+    filter: brightness(1);
+}
+
+.carta-info.carta--atras {
+    filter: brightness(0.78) saturate(0.82);
+}
+
+.carta-info.carta--entrada-inicial {
+    animation: entrada-primera-hoja 760ms var(--curva-suave) both;
+}
+
+.carta-info.carta--entrando {
+    animation: caer-hoja 760ms var(--curva-suave) both;
+}
+
+.carta-info.carta--retirando {
+    pointer-events: none;
+    animation: retirar-hoja 620ms var(--curva-suave) both;
+}
+
+.etiqueta-grafico {
+    position: absolute;
+    top: 15px;
+    left: 18px;
+    font-size: clamp(0.52rem, 1.7vw, 0.67rem);
     font-weight: 800;
-    letter-spacing: 0.15em;
-    opacity: 0.75;
+    letter-spacing: 0.12em;
+    opacity: 0.72;
 }
 
-.subtitulo-evento,
-.panel-invitacion h1,
-#saludo-invitado,
-.mensaje-principal,
-#contenedor-contador,
-.datos-evento {
-    opacity: 0;
-    transform: translateY(16px);
+.numero-hoja {
+    position: absolute;
+    right: 18px;
+    bottom: 14px;
+    font-size: 0.72rem;
+    font-weight: 800;
+    letter-spacing: 0.1em;
+    opacity: 0.78;
 }
 
-.subtitulo-evento {
+.carta-contenido {
+    width: 100%;
+    min-height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: clamp(9px, 2.2vh, 18px);
+    text-align: center;
+}
+
+.carta-contenido--centrado {
+    justify-content: center;
+}
+
+.carta-contenido h1,
+.carta-contenido h2,
+.carta-contenido p {
     margin: 0;
-    font-size: 0.9rem;
-    letter-spacing: 0.24em;
 }
 
-.panel-invitacion h1 {
-    margin: 8px 0;
-    font-size: clamp(3rem, 14vw, 5.6rem);
-    line-height: 0.95;
+.carta-contenido h1 {
+    max-width: 11ch;
+    font-size: clamp(2.3rem, 10vw, 5.6rem);
+    line-height: 0.94;
 }
 
-#saludo-invitado {
-    margin: 18px 0 8px;
-    font-size: clamp(1.35rem, 5vw, 2rem);
+.carta-contenido h2 {
+    font-size: clamp(1.65rem, 6vw, 3rem);
+    line-height: 1.05;
 }
 
-.mensaje-principal {
+.sobretitulo {
+    font-size: clamp(0.78rem, 2.8vw, 1rem);
+    font-weight: 800;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+}
+
+.texto-cordial,
+.texto-secundario {
     max-width: 38ch;
-    margin: 10px auto 20px;
-    line-height: 1.5;
+    font-size: clamp(0.95rem, 3.5vw, 1.2rem);
+    line-height: 1.45;
+}
+
+.hora-evento {
+    font-size: clamp(1.3rem, 5vw, 2rem);
+    font-weight: 800;
 }
 
 #contenedor-contador {
+    width: 100%;
     display: grid;
-    grid-template-columns: repeat(4, minmax(54px, 1fr));
-    gap: 8px;
-    margin: 22px 0;
+    grid-template-columns: repeat(4, minmax(52px, 1fr));
+    gap: clamp(6px, 2vw, 12px);
+    margin-top: clamp(6px, 2vh, 16px);
 }
 
 .bloque-tiempo {
-    padding: 10px 5px;
-    border-radius: 12px;
+    padding: clamp(9px, 2vw, 14px) 5px;
     color: var(--texto);
-    background: rgba(255, 255, 255, 0.92);
+    background: rgba(255, 255, 255, 0.94);
+    border: 2px solid rgba(255, 255, 255, 0.72);
 }
 
 .bloque-tiempo span {
     display: block;
-    font-size: clamp(1.25rem, 6vw, 2rem);
-    font-weight: 800;
+    font-size: clamp(1.1rem, 5vw, 2rem);
+    font-weight: 900;
 }
 
 .bloque-tiempo p {
-    margin: 3px 0 0;
-    font-size: 0.68rem;
+    margin-top: 3px;
+    font-size: clamp(0.55rem, 2vw, 0.72rem);
+    font-weight: 800;
     text-transform: uppercase;
 }
 
-.datos-evento {
-    font-weight: 700;
+.marcador-ubicacion {
+    width: min(78%, 390px);
+    aspect-ratio: 1.35;
+    display: grid;
+    place-items: center;
+    padding: 20px;
+    border: 3px dashed rgba(255, 255, 255, 0.72);
+    background: rgba(169, 15, 46, 0.5);
+    font-size: clamp(0.65rem, 2.4vw, 0.88rem);
+    font-weight: 800;
+    letter-spacing: 0.1em;
 }
 
-.datos-evento p {
-    margin: 6px 0;
+.lista-regalos,
+.lista-consideraciones {
+    width: min(100%, 500px);
+    margin: 4px 0;
+    padding-left: 1.3em;
+    text-align: left;
+    font-size: clamp(0.9rem, 3.2vw, 1.08rem);
+    line-height: 1.45;
+}
+
+.lista-regalos li + li,
+.lista-consideraciones li + li {
+    margin-top: clamp(6px, 1.5vh, 12px);
 }
 
 #btn-confirmar {
-    position: fixed;
-    z-index: 5;
-    left: 50%;
-    bottom: max(20px, env(safe-area-inset-bottom));
-    transform: translate(-50%, 24px);
-    min-width: min(86vw, 330px);
-    padding: 15px 28px;
+    width: min(100%, 360px);
+    margin-top: clamp(8px, 2vh, 18px);
+    padding: 15px 24px;
     border: 0;
     border-radius: 999px;
     color: var(--texto);
     background: var(--blanco);
-    box-shadow: 0 12px 30px rgba(93, 24, 46, 0.25);
-    font-weight: 800;
+    box-shadow: 0 12px 28px rgba(78, 12, 32, 0.28);
+    font-weight: 900;
     cursor: pointer;
-    opacity: 0;
-    pointer-events: none;
 }
 
-/* Secuencia de entrada de fase 2. */
-#fase-dos.fase-dos--entrando .globo--1 {
-    animation: subir-globo 1.35s var(--curva-suave) 0ms forwards;
+#btn-confirmar:disabled {
+    cursor: wait;
+    opacity: 0.75;
 }
 
-#fase-dos.fase-dos--entrando .globo--2 {
-    animation: subir-globo 1.45s var(--curva-suave) 130ms forwards;
+.navegacion-cartas {
+    position: absolute;
+    z-index: 30;
+    left: 50%;
+    bottom: max(10px, env(safe-area-inset-bottom));
+    width: min(calc(100vw - 28px), 560px);
+    display: grid;
+    grid-template-columns: 46px 1fr 46px;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 10px;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.86);
+    box-shadow: 0 8px 26px rgba(93, 24, 46, 0.16);
+    backdrop-filter: blur(8px);
+    transform: translateX(-50%);
 }
 
-#fase-dos.fase-dos--entrando .globo--3 {
-    animation: subir-globo 1.4s var(--curva-suave) 250ms forwards;
+.btn-navegacion {
+    width: 42px;
+    height: 42px;
+    display: grid;
+    place-items: center;
+    border: 0;
+    border-radius: 50%;
+    color: var(--blanco);
+    background: var(--rojo-temporal);
+    font-size: 1.15rem;
+    font-weight: 900;
+    cursor: pointer;
 }
 
-#fase-dos.fase-dos--entrando .globo--4 {
-    animation: subir-globo 1.5s var(--curva-suave) 360ms forwards;
+.btn-navegacion:disabled {
+    opacity: 0.3;
+    cursor: default;
 }
 
-#fase-dos.fase-dos--entrando .globo--5 {
-    animation: subir-globo 1.25s var(--curva-suave) 470ms forwards;
+.estado-navegacion {
+    min-width: 0;
+    text-align: center;
 }
 
-#fase-dos.fase-dos--entrando .panel-invitacion {
-    animation: mostrar-panel 800ms var(--curva-suave) 1150ms forwards;
+#indicacion-navegacion {
+    margin: 0 0 5px;
+    overflow: hidden;
+    color: var(--texto);
+    font-size: clamp(0.68rem, 2.5vw, 0.82rem);
+    font-weight: 800;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }
 
-#fase-dos.fase-dos--entrando .subtitulo-evento {
-    animation: revelar-contenido 550ms ease 1500ms forwards;
+.indicadores-cartas {
+    display: flex;
+    justify-content: center;
+    gap: 6px;
 }
 
-#fase-dos.fase-dos--entrando .panel-invitacion h1 {
-    animation: revelar-contenido 550ms ease 1600ms forwards;
+.indicador {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: rgba(64, 45, 52, 0.2);
+    transition:
+        width 240ms ease,
+        background 240ms ease;
 }
 
-#fase-dos.fase-dos--entrando #saludo-invitado {
-    animation: revelar-contenido 550ms ease 1700ms forwards;
-}
-
-#fase-dos.fase-dos--entrando .mensaje-principal {
-    animation: revelar-contenido 550ms ease 1800ms forwards;
-}
-
-#fase-dos.fase-dos--entrando #contenedor-contador {
-    animation: revelar-contenido 550ms ease 1900ms forwards;
-}
-
-#fase-dos.fase-dos--entrando .datos-evento {
-    animation: revelar-contenido 550ms ease 2000ms forwards;
-}
-
-#fase-dos.fase-dos--entrando #btn-confirmar {
-    animation: mostrar-boton 550ms var(--curva-suave) 2350ms forwards;
+.indicador--activo {
+    width: 20px;
+    border-radius: 999px;
+    background: var(--rojo-temporal);
 }
 
 /* ==============================================================
@@ -583,61 +796,111 @@ button {
     50% { transform: scale(1.08); }
 }
 
-@keyframes subir-globo {
+@keyframes vuelo-globo {
     0% {
-        bottom: -220px;
         opacity: 0;
+        transform: translate3d(0, 12vh, 0) rotate(var(--giro)) scale(0.88);
     }
-    65% {
+    12% {
         opacity: 1;
+    }
+    52% {
+        opacity: 1;
+        transform: translate3d(14px, -72vh, 0) rotate(0deg) scale(1);
     }
     100% {
-        bottom: 62%;
-        opacity: 1;
+        opacity: 0;
+        transform: translate3d(-10px, -165vh, 0) rotate(var(--giro)) scale(1.04);
     }
 }
 
-@keyframes mostrar-panel {
-    to {
+@keyframes mostrar-escena {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+@keyframes entrada-primera-hoja {
+    0% {
+        opacity: 0;
+        transform: translate3d(0, 34px, 0) rotate(-2deg) scale(0.96);
+    }
+    100% {
         opacity: 1;
-        transform: translateY(0) scale(1);
+        transform:
+            translate3d(var(--offset-x), var(--offset-y), 0)
+            rotate(var(--rotacion))
+            scale(var(--escala));
     }
 }
 
-@keyframes revelar-contenido {
-    to {
+@keyframes caer-hoja {
+    0% {
+        opacity: 0;
+        transform: translate3d(0, -115vh, 0) rotate(14deg) scale(0.92);
+    }
+    62% {
         opacity: 1;
-        transform: translateY(0);
+        transform: translate3d(8px, 18px, 0) rotate(-2.5deg) scale(1.015);
+    }
+    82% {
+        transform: translate3d(-4px, -6px, 0) rotate(1deg) scale(0.995);
+    }
+    100% {
+        opacity: 1;
+        transform:
+            translate3d(var(--offset-x), var(--offset-y), 0)
+            rotate(var(--rotacion))
+            scale(var(--escala));
     }
 }
 
-@keyframes mostrar-boton {
-    to {
+@keyframes retirar-hoja {
+    0% {
         opacity: 1;
-        transform: translate(-50%, 0);
-        pointer-events: auto;
+        transform:
+            translate3d(var(--offset-x), var(--offset-y), 0)
+            rotate(var(--rotacion))
+            scale(var(--escala));
+    }
+    100% {
+        opacity: 0;
+        transform: translate3d(-18px, -115vh, 0) rotate(-14deg) scale(0.94);
     }
 }
 
 @media (min-width: 768px) {
-    .globo {
-        width: 120px;
-        height: 164px;
+    .escena-cartas {
+        padding: 28px 30px 76px;
     }
 
-    #btn-confirmar {
-        left: auto;
-        right: 30px;
-        min-width: 0;
-        transform: translateY(24px);
+    .mazo-cartas {
+        width: min(calc(100vw - 70px), 760px);
+        height: min(calc(100dvh - 118px), 780px);
     }
 
-    @keyframes mostrar-boton {
-        to {
-            opacity: 1;
-            transform: translateY(0);
-            pointer-events: auto;
-        }
+    .navegacion-cartas {
+        bottom: 14px;
+    }
+}
+
+@media (max-height: 650px) {
+    .mazo-cartas {
+        min-height: 0;
+        height: calc(100dvh - 84px);
+    }
+
+    .carta-info {
+        padding-top: 28px;
+        padding-bottom: 24px;
+    }
+
+    .carta-contenido {
+        gap: 7px;
+    }
+
+    .lista-regalos,
+    .lista-consideraciones {
+        line-height: 1.28;
     }
 }
 

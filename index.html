@@ -2,24 +2,22 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <title>Baby Shower de Ketsia</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
     <!-- =========================================================
          FASE 1
-         Contiene: carta inicial, captura del nombre y carga.
-         Los cuadros rojos son marcadores temporales para imágenes.
+         Carta inicial, captura del nombre y consulta en Firebase.
+         Los gráficos rojos son marcadores temporales para imágenes.
     ========================================================== -->
     <main id="fase-uno" class="fase fase--activa" aria-live="polite">
-        <!-- PASO 1: aparece automáticamente después de 2 segundos -->
         <section id="paso-carta" class="paso paso-carta" aria-label="Abrir invitación">
             <p id="texto-tienes-invitacion" class="texto-carta">
                 Tienes una invitación
             </p>
 
-            <!-- Sustituye este cuadro con tu imagen de carta en assets/img -->
             <button
                 id="carta-inicial"
                 class="grafico-temporal grafico-carta"
@@ -32,10 +30,8 @@
             <p class="indicacion-toque">Toca la carta para continuar</p>
         </section>
 
-        <!-- PASO 2: sobre trasero + papel delantero para escribir el nombre -->
         <section id="paso-nombre" class="paso paso-nombre" aria-label="Escribe tu nombre">
             <div class="composicion-nombre">
-                <!-- Sustituye este cuadro con el gráfico trasero -->
                 <div
                     id="grafico-sobre-trasero"
                     class="grafico-temporal grafico-sobre-trasero"
@@ -44,7 +40,6 @@
                     SOBRE
                 </div>
 
-                <!-- Sustituye este cuadro con el gráfico del papel -->
                 <div id="grafico-papel" class="grafico-temporal grafico-papel">
                     <label for="nombre-invitado">Invitado:</label>
                     <input
@@ -62,7 +57,6 @@
             </div>
         </section>
 
-        <!-- PASO 3: simulación visual mientras se registra en Firebase -->
         <section id="paso-carga" class="paso paso-carga" aria-label="Consultando invitados">
             <div class="cargador-circular" aria-hidden="true"></div>
             <p id="estado-consulta" role="status">Consultando invitados...</p>
@@ -71,60 +65,165 @@
 
     <!-- =========================================================
          FASE 2
-         Globos temporales + panel gráfico con la información.
+         Cortina de globos y cinco hojas apiladas.
+         Cada gráfico rojo puede sustituirse después por imágenes.
     ========================================================== -->
     <main id="fase-dos" class="fase fase--oculta" aria-live="polite">
-        <div class="globos-temporales" aria-hidden="true">
-            <!-- Sustituye cada cuadro por una imagen de globo -->
-            <div class="grafico-temporal globo globo--1">GLOBO</div>
-            <div class="grafico-temporal globo globo--2">GLOBO</div>
-            <div class="grafico-temporal globo globo--3">GLOBO</div>
-            <div class="grafico-temporal globo globo--4">GLOBO</div>
-            <div class="grafico-temporal globo globo--5">GLOBO</div>
+        <!-- Transición temporal de globos. Cada elemento puede usar
+             background-image: url('./assets/img/globo-X.png'). -->
+        <div id="transicion-globos" class="transicion-globos" aria-hidden="true">
+            <div class="grafico-temporal globo-transicion" style="--x: -3%; --tam: 142px; --delay: 0ms; --dur: 2500ms; --giro: -10deg;"><span>GLOBO</span></div>
+            <div class="grafico-temporal globo-transicion" style="--x: 5%; --tam: 108px; --delay: 190ms; --dur: 2400ms; --giro: 8deg;"><span>GLOBO</span></div>
+            <div class="grafico-temporal globo-transicion" style="--x: 12%; --tam: 156px; --delay: 420ms; --dur: 2550ms; --giro: -5deg;"><span>GLOBO</span></div>
+            <div class="grafico-temporal globo-transicion" style="--x: 20%; --tam: 96px; --delay: 80ms; --dur: 2250ms; --giro: 12deg;"><span>GLOBO</span></div>
+            <div class="grafico-temporal globo-transicion" style="--x: 27%; --tam: 132px; --delay: 610ms; --dur: 2480ms; --giro: -12deg;"><span>GLOBO</span></div>
+            <div class="grafico-temporal globo-transicion" style="--x: 34%; --tam: 112px; --delay: 270ms; --dur: 2320ms; --giro: 5deg;"><span>GLOBO</span></div>
+            <div class="grafico-temporal globo-transicion" style="--x: 41%; --tam: 166px; --delay: 760ms; --dur: 2550ms; --giro: -7deg;"><span>GLOBO</span></div>
+            <div class="grafico-temporal globo-transicion" style="--x: 49%; --tam: 104px; --delay: 120ms; --dur: 2360ms; --giro: 10deg;"><span>GLOBO</span></div>
+            <div class="grafico-temporal globo-transicion" style="--x: 56%; --tam: 148px; --delay: 500ms; --dur: 2460ms; --giro: -9deg;"><span>GLOBO</span></div>
+            <div class="grafico-temporal globo-transicion" style="--x: 64%; --tam: 90px; --delay: 330ms; --dur: 2200ms; --giro: 7deg;"><span>GLOBO</span></div>
+            <div class="grafico-temporal globo-transicion" style="--x: 70%; --tam: 138px; --delay: 820ms; --dur: 2520ms; --giro: -11deg;"><span>GLOBO</span></div>
+            <div class="grafico-temporal globo-transicion" style="--x: 78%; --tam: 116px; --delay: 210ms; --dur: 2380ms; --giro: 6deg;"><span>GLOBO</span></div>
+            <div class="grafico-temporal globo-transicion" style="--x: 85%; --tam: 158px; --delay: 570ms; --dur: 2580ms; --giro: -6deg;"><span>GLOBO</span></div>
+            <div class="grafico-temporal globo-transicion" style="--x: 93%; --tam: 106px; --delay: 390ms; --dur: 2300ms; --giro: 11deg;"><span>GLOBO</span></div>
+            <div class="grafico-temporal globo-transicion globo-transicion--fondo" style="--x: 1%; --tam: 92px; --delay: 900ms; --dur: 2220ms; --giro: 4deg;"><span>GLOBO</span></div>
+            <div class="grafico-temporal globo-transicion globo-transicion--fondo" style="--x: 23%; --tam: 102px; --delay: 980ms; --dur: 2300ms; --giro: -8deg;"><span>GLOBO</span></div>
+            <div class="grafico-temporal globo-transicion globo-transicion--fondo" style="--x: 47%; --tam: 118px; --delay: 1040ms; --dur: 2420ms; --giro: 9deg;"><span>GLOBO</span></div>
+            <div class="grafico-temporal globo-transicion globo-transicion--fondo" style="--x: 72%; --tam: 96px; --delay: 940ms; --dur: 2280ms; --giro: -5deg;"><span>GLOBO</span></div>
+            <div class="grafico-temporal globo-transicion globo-transicion--fondo" style="--x: 91%; --tam: 126px; --delay: 1080ms; --dur: 2460ms; --giro: 8deg;"><span>GLOBO</span></div>
         </div>
 
-        <!-- Rectángulo gráfico temporal que cubre gran parte del fondo -->
-        <section id="panel-invitacion" class="grafico-temporal panel-invitacion">
-            <p class="etiqueta-temporal">RECTÁNGULO GRÁFICO</p>
-            <p class="subtitulo-evento">BABY SHOWER</p>
-            <h1>Ketsia</h1>
-            <h2 id="saludo-invitado">¡Hola!</h2>
+        <section id="escena-cartas" class="escena-cartas" aria-label="Información del Baby Shower">
+            <div
+                id="mazo-cartas"
+                class="mazo-cartas"
+                tabindex="0"
+                aria-roledescription="carrusel"
+                aria-label="Cinco hojas con información del evento"
+            >
+                <!-- HOJA 1 -->
+                <article class="grafico-temporal carta-info carta-info--1" data-carta="0" aria-hidden="false">
+                    <span class="etiqueta-grafico">HOJA 1 · GRÁFICO TEMPORAL</span>
+                    <div class="carta-contenido">
+                        <p class="sobretitulo">Con mucha alegría</p>
+                        <h2 id="saludo-invitado">¡Hola!</h2>
+                        <p class="texto-cordial">
+                            Tenemos el gusto de invitarte a celebrar con nosotros el
+                        </p>
+                        <h1>Baby Shower de Ketsia</h1>
+                        <p class="texto-secundario">
+                            Tu presencia hará este día todavía más especial.
+                        </p>
+                    </div>
+                    <span class="numero-hoja">1 / 5</span>
+                </article>
 
-            <p class="mensaje-principal">
-                Acompáñanos a celebrar la llegada de nuestra pequeña.
-            </p>
+                <!-- HOJA 2 -->
+                <article class="grafico-temporal carta-info carta-info--2" data-carta="1" aria-hidden="true">
+                    <span class="etiqueta-grafico">HOJA 2 · GRÁFICO TEMPORAL</span>
+                    <div class="carta-contenido">
+                        <p class="sobretitulo">Fecha y hora del evento</p>
+                        <h2>9 de agosto de 2026</h2>
+                        <p class="hora-evento">3:00 p. m.</p>
 
-            <div id="contenedor-contador" aria-label="Cuenta regresiva">
-                <div class="bloque-tiempo">
-                    <span id="dias">00</span>
-                    <p>Días</p>
-                </div>
-                <div class="bloque-tiempo">
-                    <span id="horas">00</span>
-                    <p>Horas</p>
-                </div>
-                <div class="bloque-tiempo">
-                    <span id="minutos">00</span>
-                    <p>Min</p>
-                </div>
-                <div class="bloque-tiempo">
-                    <span id="segundos">00</span>
-                    <p>Seg</p>
-                </div>
+                        <div id="contenedor-contador" aria-label="Cuenta regresiva para el evento">
+                            <div class="bloque-tiempo">
+                                <span id="dias">00</span>
+                                <p>Días</p>
+                            </div>
+                            <div class="bloque-tiempo">
+                                <span id="horas">00</span>
+                                <p>Horas</p>
+                            </div>
+                            <div class="bloque-tiempo">
+                                <span id="minutos">00</span>
+                                <p>Min</p>
+                            </div>
+                            <div class="bloque-tiempo">
+                                <span id="segundos">00</span>
+                                <p>Seg</p>
+                            </div>
+                        </div>
+                    </div>
+                    <span class="numero-hoja">2 / 5</span>
+                </article>
+
+                <!-- HOJA 3 -->
+                <article class="grafico-temporal carta-info carta-info--3" data-carta="2" aria-hidden="true">
+                    <span class="etiqueta-grafico">HOJA 3 · GRÁFICO TEMPORAL</span>
+                    <div class="carta-contenido carta-contenido--centrado">
+                        <p class="sobretitulo">Nos encontraremos en</p>
+                        <h2>Ubicación</h2>
+                        <div class="marcador-ubicacion" aria-hidden="true">
+                            ESPACIO PARA UBICACIÓN
+                        </div>
+                    </div>
+                    <span class="numero-hoja">3 / 5</span>
+                </article>
+
+                <!-- HOJA 4 -->
+                <article class="grafico-temporal carta-info carta-info--4" data-carta="3" aria-hidden="true">
+                    <span class="etiqueta-grafico">HOJA 4 · GRÁFICO TEMPORAL</span>
+                    <div class="carta-contenido">
+                        <p class="sobretitulo">Mesa de regalos</p>
+                        <h2>Algunas ideas para Ketsia</h2>
+                        <ul class="lista-regalos">
+                            <li>Pañales en tallas mediana y grande.</li>
+                            <li>Toallitas húmedas sin fragancia.</li>
+                            <li>Ropita de 3 a 9 meses.</li>
+                            <li>Artículos de baño y cuidado para bebé.</li>
+                        </ul>
+                        <p class="texto-secundario">
+                            Lo más importante para nosotros es compartir este momento contigo.
+                        </p>
+                    </div>
+                    <span class="numero-hoja">4 / 5</span>
+                </article>
+
+                <!-- HOJA 5 -->
+                <article class="grafico-temporal carta-info carta-info--5" data-carta="4" aria-hidden="true">
+                    <span class="etiqueta-grafico">HOJA 5 · GRÁFICO TEMPORAL</span>
+                    <div class="carta-contenido">
+                        <p class="sobretitulo">Consideraciones</p>
+                        <h2>Antes de acompañarnos</h2>
+                        <ul class="lista-consideraciones">
+                            <li>Te recomendamos llegar 15 minutos antes.</li>
+                            <li>Confirma tu asistencia para preparar todo con cariño.</li>
+                            <li>Comparte cualquier consideración especial con la familia.</li>
+                        </ul>
+
+                        <button id="btn-confirmar" type="button">
+                            Confirmar asistencia
+                        </button>
+                    </div>
+                    <span class="numero-hoja">5 / 5</span>
+                </article>
             </div>
 
-            <div class="datos-evento">
-                <p>9 de agosto de 2026</p>
-                <p>3:00 p. m.</p>
-            </div>
+            <nav class="navegacion-cartas" aria-label="Navegación entre hojas">
+                <button id="btn-carta-anterior" class="btn-navegacion" type="button" aria-label="Ver hoja anterior">
+                    ↑
+                </button>
+
+                <div class="estado-navegacion">
+                    <p id="indicacion-navegacion">Toca la hoja para continuar</p>
+                    <div id="indicadores-cartas" class="indicadores-cartas" aria-hidden="true">
+                        <span class="indicador indicador--activo"></span>
+                        <span class="indicador"></span>
+                        <span class="indicador"></span>
+                        <span class="indicador"></span>
+                        <span class="indicador"></span>
+                    </div>
+                </div>
+
+                <button id="btn-carta-siguiente" class="btn-navegacion" type="button" aria-label="Ver hoja siguiente">
+                    ↓
+                </button>
+            </nav>
         </section>
-
-        <button id="btn-confirmar" type="button">
-            Confirmar asistencia
-        </button>
     </main>
 
-    <audio id="musica-fondo" loop>
+    <audio id="musica-fondo" loop preload="auto">
         <source src="assets/cancion.mp3" type="audio/mpeg">
     </audio>
 

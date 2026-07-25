@@ -1,6 +1,5 @@
 // Firebase 10.x
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-
 import {
     getFirestore,
     collection,
@@ -22,92 +21,45 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
-// ==============================================================
-// REFERENCIAS DE LA FASE 1
-// ==============================================================
-
+// Referencias de fase 1
 const faseUno = document.getElementById("fase-uno");
 const pasoCarta = document.getElementById("paso-carta");
 const cartaInicial = document.getElementById("carta-inicial");
-
 const pasoNombre = document.getElementById("paso-nombre");
 const inputNombre = document.getElementById("nombre-invitado");
 const btnEnviarNombre = document.getElementById("btn-enviar-nombre");
-
 const pasoCarga = document.getElementById("paso-carga");
 const estadoConsulta = document.getElementById("estado-consulta");
 
-// ==============================================================
-// REFERENCIAS DE LA FASE 2
-// ==============================================================
-
+// Referencias de fase 2
 const faseDos = document.getElementById("fase-dos");
+const mazoCartas = document.getElementById("mazo-cartas");
+const cartas = Array.from(document.querySelectorAll(".carta-info"));
+const indicadores = Array.from(document.querySelectorAll(".indicador"));
+const indicacionNavegacion = document.getElementById("indicacion-navegacion");
+const btnCartaAnterior = document.getElementById("btn-carta-anterior");
+const btnCartaSiguiente = document.getElementById("btn-carta-siguiente");
 const saludoInvitado = document.getElementById("saludo-invitado");
 const btnConfirmar = document.getElementById("btn-confirmar");
 const musica = document.getElementById("musica-fondo");
 
-// ==============================================================
-// ESTADO GENERAL
-// ==============================================================
-
 let idDocumentoInvitado = "";
 let nombreInvitadoActual = "";
 let enviandoNombre = false;
-
-/**
- * Crea una pausa utilizable con await.
- */
-const esperar = (milisegundos) =>
-    new Promise((resolve) => {
-        window.setTimeout(resolve, milisegundos);
-    });
-
 let musicaPreparada = false;
 
-/**
- * Prepara el audio silenciosamente durante una interacción del usuario.
- * Esto ayuda a evitar bloqueos de reproducción en celulares.
- */
-async function prepararMusica() {
-    if (!musica || musicaPreparada) {
-        return;
-    }
+let indiceCartaActual = 0;
+let cartasPreparadas = false;
+let navegacionBloqueada = false;
+let ignorarSiguienteClick = false;
+let inicioToqueY = 0;
+let inicioToqueX = 0;
+let acumuladoRueda = 0;
+let temporizadorRueda = 0;
 
-    try {
-        musica.muted = true;
-
-        await musica.play();
-
-        musica.pause();
-        musica.currentTime = 0;
-        musica.muted = false;
-
-        musicaPreparada = true;
-
-    } catch (error) {
-        musica.muted = false;
-        console.info("No fue posible preparar el audio:", error);
-    }
-}
-
-/**
- * Inicia la música cuando el invitado fue encontrado.
- */
-async function reproducirMusica() {
-    if (!musica) {
-        return;
-    }
-
-    try {
-        musica.muted = false;
-        musica.currentTime = 0;
-
-        await musica.play();
-
-    } catch (error) {
-        console.info("El navegador no permitió reproducir la música:", error);
-    }
-}
+const esperar = (milisegundos) => new Promise((resolve) => {
+    window.setTimeout(resolve, milisegundos);
+});
 
 /**
  * Cambia entre los pasos internos de la fase 1.
@@ -117,34 +69,22 @@ function mostrarPaso(nuevoPaso, pasoAnterior = null) {
         pasoAnterior.classList.add("paso--cerrando");
 
         window.setTimeout(() => {
-            pasoAnterior.classList.remove(
-                "paso--visible",
-                "paso--cerrando"
-            );
+            pasoAnterior.classList.remove("paso--visible", "paso--cerrando");
         }, 500);
     }
 
     nuevoPaso.classList.add("paso--visible");
 }
 
-// ==============================================================
-// APARICIÓN INICIAL DE LA CARTA
-// ==============================================================
-
 /**
- * La página comienza vacía.
- * Después de dos segundos aparece la carta.
+ * La página comienza vacía y muestra la carta después de 2 segundos.
  */
 window.setTimeout(() => {
     mostrarPaso(pasoCarta);
 }, 2000);
 
-// ==============================================================
-// ABRIR LA CARTA
-// ==============================================================
-
 /**
- * Al tocar la carta se muestra el formulario del nombre.
+ * Al tocar la carta se muestra el formulario. La música aún no inicia.
  */
 function abrirCarta() {
     mostrarPaso(pasoNombre, pasoCarta);
@@ -156,51 +96,77 @@ function abrirCarta() {
 
 cartaInicial.addEventListener("click", abrirCarta);
 
-// ==============================================================
-// CAMPO DEL NOMBRE
-// ==============================================================
-
 /**
- * El botón Enviar aparece y se habilita cuando existe un nombre.
+ * El botón Enviar aparece únicamente cuando hay un nombre escrito.
  */
 inputNombre.addEventListener("input", () => {
-    const tieneNombre =
-        inputNombre.value.trim().length > 0;
+    const tieneNombre = inputNombre.value.trim().length > 0;
 
-    btnEnviarNombre.disabled =
-        !tieneNombre || enviandoNombre;
-
-    btnEnviarNombre.classList.toggle(
-        "btn--habilitado",
-        tieneNombre
-    );
+    btnEnviarNombre.disabled = !tieneNombre || enviandoNombre;
+    btnEnviarNombre.classList.toggle("btn--habilitado", tieneNombre);
 });
 
-/**
- * Permite enviar el nombre presionando Enter.
- */
 inputNombre.addEventListener("keydown", (evento) => {
-    if (
-        evento.key === "Enter" &&
-        !btnEnviarNombre.disabled
-    ) {
+    if (evento.key === "Enter" && !btnEnviarNombre.disabled) {
         enviarNombre();
     }
 });
 
-btnEnviarNombre.addEventListener(
-    "click",
-    enviarNombre
-);
+btnEnviarNombre.addEventListener("click", enviarNombre);
 
-// ==============================================================
-// CONSULTAR Y REGISTRAR INVITADO
-// ==============================================================
+/**
+ * Inicia el audio silenciado durante el clic del usuario. Esto permite
+ * desbloquearlo en celulares sin que la canción se escuche todavía.
+ */
+async function prepararMusica() {
+    if (!musica || musicaPreparada) {
+        return;
+    }
+
+    try {
+        musica.muted = true;
+        musica.volume = 0.75;
+        await musica.play();
+        musicaPreparada = true;
+    } catch (error) {
+        musica.muted = false;
+        console.info("El navegador no permitió preparar el audio:", error);
+    }
+}
+
+/**
+ * La canción comienza cuando la pantalla indica «Invitado encontrado».
+ */
+async function reproducirMusica() {
+    if (!musica) {
+        return;
+    }
+
+    try {
+        musica.currentTime = 0;
+        musica.muted = false;
+
+        if (musica.paused) {
+            await musica.play();
+        }
+    } catch (error) {
+        console.info("El navegador no permitió reproducir la música:", error);
+    }
+}
+
+function cancelarMusicaPreparada() {
+    if (!musica || !musicaPreparada) {
+        return;
+    }
+
+    musica.pause();
+    musica.currentTime = 0;
+    musica.muted = false;
+    musicaPreparada = false;
+}
 
 /**
  * Registra en Firestore que la persona abrió la invitación.
- * El cargador permanece visible el tiempo suficiente para
- * apreciar su animación.
  */
 async function enviarNombre() {
     const nombre = inputNombre.value.trim();
@@ -209,349 +175,418 @@ async function enviarNombre() {
         return;
     }
 
-    // Se prepara silenciosamente mientras todavía existe
-    // una interacción directa del usuario.
-    prepararMusica();
+    // Se prepara durante la interacción directa, pero permanece silenciada.
+    void prepararMusica();
 
     enviandoNombre = true;
     nombreInvitadoActual = nombre;
-
     btnEnviarNombre.disabled = true;
     inputNombre.disabled = true;
 
-    estadoConsulta.textContent =
-        "Consultando invitados...";
-
-    estadoConsulta.classList.remove(
-        "estado--encontrado",
-        "estado--error"
-    );
-
-    mostrarPaso(
-        pasoCarga,
-        pasoNombre
-    );
+    estadoConsulta.textContent = "Consultando invitados...";
+    estadoConsulta.classList.remove("estado--encontrado", "estado--error");
+    mostrarPaso(pasoCarga, pasoNombre);
 
     try {
-        /**
-         * Registramos la apertura de la invitación.
-         */
-        const registroFirebase = addDoc(
-            collection(db, "invitados"),
-            {
-                nombre: nombre,
-                abrio_invitacion: true,
-                fecha_apertura: new Date(),
-                asistencia_confirmada: false
-            }
-        );
+        const registroFirebase = addDoc(collection(db, "invitados"), {
+            nombre,
+            abrio_invitacion: true,
+            fecha_apertura: new Date(),
+            asistencia_confirmada: false
+        });
 
-        /**
-         * Firebase trabaja mientras mostramos la animación
-         * durante al menos 1.5 segundos.
-         */
         const [docRef] = await Promise.all([
             registroFirebase,
             esperar(1500)
         ]);
 
         idDocumentoInvitado = docRef.id;
-
-        saludoInvitado.textContent =
-            `¡Hola, ${nombre}!`;
+        saludoInvitado.textContent = `¡Hola, ${nombre}!`;
 
         estadoConsulta.textContent = "Invitado encontrado";
         estadoConsulta.classList.add("estado--encontrado");
 
-        // La música comienza exactamente cuando aparece
-        // el mensaje "Invitado encontrado".
         await reproducirMusica();
-
         await esperar(950);
         await mostrarFaseDos();
 
     } catch (error) {
-        console.error(
-            "Error al registrar la apertura:",
-            error
-        );
+        console.error("Error al registrar la apertura:", error);
+        cancelarMusicaPreparada();
 
-        estadoConsulta.textContent =
-            "No pudimos conectar. Intenta nuevamente.";
-
-        estadoConsulta.classList.add(
-            "estado--error"
-        );
+        estadoConsulta.textContent = "No pudimos conectar. Intenta nuevamente.";
+        estadoConsulta.classList.add("estado--error");
 
         await esperar(1700);
 
-        pasoCarga.classList.remove(
-            "paso--visible"
-        );
-
-        pasoNombre.classList.add(
-            "paso--visible"
-        );
-
+        pasoCarga.classList.remove("paso--visible");
+        pasoNombre.classList.add("paso--visible");
         inputNombre.disabled = false;
         enviandoNombre = false;
 
-        const tieneNombre =
-            inputNombre.value.trim().length > 0;
-
-        btnEnviarNombre.disabled =
-            !tieneNombre;
-
-        btnEnviarNombre.classList.toggle(
-            "btn--habilitado",
-            tieneNombre
-        );
+        const tieneNombre = inputNombre.value.trim().length > 0;
+        btnEnviarNombre.disabled = !tieneNombre;
+        btnEnviarNombre.classList.toggle("btn--habilitado", tieneNombre);
     }
 }
 
-// ==============================================================
-// TRANSICIÓN A LA FASE 2
-// ==============================================================
-
 /**
- * Hace fade out de toda la fase 1 y activa
- * la secuencia animada de la fase 2.
+ * Activa la cortina de globos. Cuando todos salen de la pantalla,
+ * muestra el mazo con la primera hoja.
  */
 async function mostrarFaseDos() {
-    faseDos.classList.remove(
-        "fase--oculta"
-    );
-
-    faseDos.classList.add(
-        "fase--activa",
-        "fase-dos--entrando"
-    );
-
-    faseUno.classList.add(
-        "fase--saliendo"
-    );
+    faseDos.classList.remove("fase--oculta");
+    faseDos.classList.add("fase--activa", "fase-dos--globos");
+    faseUno.classList.add("fase--saliendo");
 
     await esperar(750);
 
-    faseUno.classList.remove(
-        "fase--activa",
-        "fase--saliendo"
-    );
+    faseUno.classList.remove("fase--activa", "fase--saliendo");
+    faseUno.classList.add("fase--oculta");
 
-    faseUno.classList.add(
-        "fase--oculta"
-    );
+    // Duración total: último retraso de globo + su vuelo.
+    await esperar(3000);
+
+    faseDos.classList.add("globos--finalizados", "fase-dos--cartas");
+    prepararMazoCartas();
 }
 
-// ==============================================================
-// CONFIRMAR ASISTENCIA
-// ==============================================================
+/**
+ * Configura la primera hoja y habilita la navegación.
+ */
+function prepararMazoCartas() {
+    indiceCartaActual = 0;
+    actualizarEstadoCartas();
+
+    const primeraCarta = cartas[0];
+    primeraCarta.classList.add("carta--entrada-inicial");
+    primeraCarta.addEventListener("animationend", () => {
+        primeraCarta.classList.remove("carta--entrada-inicial");
+    }, { once: true });
+
+    cartasPreparadas = true;
+    navegacionBloqueada = false;
+    actualizarNavegacionVisual();
+
+    window.setTimeout(() => {
+        mazoCartas.focus({ preventScroll: true });
+    }, 750);
+}
 
 /**
- * Confirma la asistencia en Firestore y abre WhatsApp
- * con el mensaje preparado.
+ * Calcula la posición de cada hoja revelada para que se vean apiladas.
  */
-btnConfirmar.addEventListener(
-    "click",
-    async () => {
-        if (!idDocumentoInvitado) {
-            alert(
-                "No pudimos identificar tu registro. " +
-                "Recarga la invitación e intenta nuevamente."
-            );
+function actualizarEstadoCartas() {
+    const rotaciones = [-2.1, 1.5, -1.2, 1.9, -0.7];
 
+    cartas.forEach((carta, indice) => {
+        carta.classList.remove("carta--activa", "carta--atras");
+        carta.style.zIndex = String(10 + indice);
+
+        if (indice > indiceCartaActual) {
+            carta.classList.remove("carta--revelada");
+            carta.setAttribute("aria-hidden", "true");
             return;
         }
 
-        /**
-         * Número de WhatsApp:
-         * +52 951 656 0060
-         *
-         * Se escribe sin espacios, guiones ni el signo +.
-         */
-        const numeroWhatsApp =
-            "529516560060";
+        const distancia = indiceCartaActual - indice;
+        const desplazamientoX = distancia === 0
+            ? 0
+            : (distancia % 2 === 0 ? -1 : 1) * (4 + distancia * 3);
+        const desplazamientoY = distancia * 8;
+        const escala = Math.max(0.93, 1 - distancia * 0.012);
+        const rotacion = distancia === 0 ? 0 : rotaciones[indice] * Math.min(distancia, 2);
 
-        const mensajeWhatsApp =
-            `Hola, confirmo mi asistencia al baby shower de Ketsia. ` +
-            `Mi nombre es ${nombreInvitadoActual}. ` +
-            `¡Muchas gracias por la invitación!`;
+        carta.style.setProperty("--offset-x", `${desplazamientoX}px`);
+        carta.style.setProperty("--offset-y", `${desplazamientoY}px`);
+        carta.style.setProperty("--escala", String(escala));
+        carta.style.setProperty("--rotacion", `${rotacion}deg`);
+        carta.classList.add("carta--revelada");
+        carta.classList.toggle("carta--activa", indice === indiceCartaActual);
+        carta.classList.toggle("carta--atras", indice < indiceCartaActual);
+        carta.setAttribute("aria-hidden", indice === indiceCartaActual ? "false" : "true");
+    });
+}
 
-        const enlaceWhatsApp =
-            `https://wa.me/${numeroWhatsApp}` +
-            `?text=${encodeURIComponent(mensajeWhatsApp)}`;
+/**
+ * Actualiza flechas, puntos e instrucciones de uso.
+ */
+function actualizarNavegacionVisual() {
+    btnCartaAnterior.disabled = indiceCartaActual === 0 || navegacionBloqueada;
+    btnCartaSiguiente.disabled = indiceCartaActual === cartas.length - 1 || navegacionBloqueada;
 
-        /**
-         * Abrimos la pestaña durante el clic para reducir
-         * la posibilidad de que el navegador la bloquee.
-         */
-        const ventanaWhatsApp =
-            window.open("", "_blank");
+    indicadores.forEach((indicador, indice) => {
+        indicador.classList.toggle("indicador--activo", indice === indiceCartaActual);
+    });
 
-        try {
-            btnConfirmar.disabled = true;
-            btnConfirmar.textContent =
-                "Confirmando...";
-
-            const invitadoRef = doc(
-                db,
-                "invitados",
-                idDocumentoInvitado
-            );
-
-            await updateDoc(
-                invitadoRef,
-                {
-                    asistencia_confirmada: true,
-                    fecha_confirmacion: new Date()
-                }
-            );
-
-            btnConfirmar.textContent =
-                "¡Asistencia confirmada!";
-
-            if (ventanaWhatsApp) {
-                ventanaWhatsApp.location.href =
-                    enlaceWhatsApp;
-            } else {
-                window.location.href =
-                    enlaceWhatsApp;
-            }
-
-        } catch (error) {
-            console.error(
-                "Error al confirmar asistencia:",
-                error
-            );
-
-            if (ventanaWhatsApp) {
-                ventanaWhatsApp.close();
-            }
-
-            btnConfirmar.disabled = false;
-
-            btnConfirmar.textContent =
-                "Confirmar asistencia";
-
-            alert(
-                "Hubo un problema al confirmar. " +
-                "Intenta nuevamente."
-            );
-        }
+    if (indiceCartaActual === cartas.length - 1) {
+        indicacionNavegacion.textContent = window.matchMedia("(pointer: coarse)").matches
+            ? "Desliza arriba para revisar las hojas anteriores"
+            : "Usa la rueda hacia arriba para revisar las hojas anteriores";
+    } else if (window.matchMedia("(pointer: coarse)").matches) {
+        indicacionNavegacion.textContent =
+            "Toca o desliza abajo para avanzar · arriba para volver";
+    } else {
+        indicacionNavegacion.textContent =
+            "Haz clic o usa la rueda del mouse";
     }
-);
-
-// ==============================================================
-// CONTADOR REGRESIVO
-// ==============================================================
+}
 
 /**
- * Los meses en JavaScript comienzan desde cero:
- *
- * Enero = 0
- * Febrero = 1
- * ...
- * Agosto = 7
- *
- * Esta fecha corresponde al 22 de agosto de 2026,
- * a las 3:00 p. m.
+ * Añade la siguiente hoja con animación de caída.
  */
-const fechaBabyShower =
-    new Date(
-        2026,
-        7,
-        9,
-        15,
-        0,
-        0
-    ).getTime();
+function irSiguiente() {
+    if (
+        !cartasPreparadas ||
+        navegacionBloqueada ||
+        indiceCartaActual >= cartas.length - 1
+    ) {
+        return;
+    }
+
+    navegacionBloqueada = true;
+    indiceCartaActual += 1;
+    actualizarEstadoCartas();
+    actualizarNavegacionVisual();
+
+    const cartaEntrante = cartas[indiceCartaActual];
+    cartaEntrante.classList.add("carta--entrando");
+
+    cartaEntrante.addEventListener("animationend", () => {
+        cartaEntrante.classList.remove("carta--entrando");
+        navegacionBloqueada = false;
+        actualizarNavegacionVisual();
+    }, { once: true });
+}
 
 /**
- * Actualiza los días, horas, minutos y segundos restantes.
+ * Retira la hoja superior para mostrar la anterior.
  */
+function irAnterior() {
+    if (
+        !cartasPreparadas ||
+        navegacionBloqueada ||
+        indiceCartaActual <= 0
+    ) {
+        return;
+    }
+
+    navegacionBloqueada = true;
+    const cartaSaliente = cartas[indiceCartaActual];
+    cartaSaliente.classList.add("carta--retirando");
+    actualizarNavegacionVisual();
+
+    cartaSaliente.addEventListener("animationend", () => {
+        cartaSaliente.classList.remove("carta--retirando", "carta--revelada", "carta--activa");
+        cartaSaliente.setAttribute("aria-hidden", "true");
+
+        indiceCartaActual -= 1;
+        actualizarEstadoCartas();
+        navegacionBloqueada = false;
+        actualizarNavegacionVisual();
+    }, { once: true });
+}
+
+btnCartaAnterior.addEventListener("click", (evento) => {
+    evento.stopPropagation();
+    irAnterior();
+});
+
+btnCartaSiguiente.addEventListener("click", (evento) => {
+    evento.stopPropagation();
+    irSiguiente();
+});
+
+// Tocar o hacer clic sobre una hoja avanza a la siguiente.
+mazoCartas.addEventListener("click", (evento) => {
+    if (ignorarSiguienteClick) {
+        ignorarSiguienteClick = false;
+        return;
+    }
+
+    if (evento.target.closest("button, a, input, textarea, select")) {
+        return;
+    }
+
+    irSiguiente();
+});
+
+/**
+ * Computadora: rueda hacia abajo = siguiente; rueda hacia arriba = anterior.
+ */
+faseDos.addEventListener("wheel", (evento) => {
+    if (!cartasPreparadas || navegacionBloqueada) {
+        return;
+    }
+
+    evento.preventDefault();
+    acumuladoRueda += evento.deltaY;
+
+    window.clearTimeout(temporizadorRueda);
+    temporizadorRueda = window.setTimeout(() => {
+        acumuladoRueda = 0;
+    }, 180);
+
+    if (Math.abs(acumuladoRueda) < 48) {
+        return;
+    }
+
+    if (acumuladoRueda > 0) {
+        irSiguiente();
+    } else {
+        irAnterior();
+    }
+
+    acumuladoRueda = 0;
+}, { passive: false });
+
+/**
+ * Celular, según lo solicitado:
+ * - deslizar hacia arriba: hoja anterior
+ * - deslizar hacia abajo: hoja siguiente
+ */
+mazoCartas.addEventListener("touchstart", (evento) => {
+    const toque = evento.changedTouches[0];
+    inicioToqueY = toque.clientY;
+    inicioToqueX = toque.clientX;
+}, { passive: true });
+
+mazoCartas.addEventListener("touchend", (evento) => {
+    if (!cartasPreparadas || navegacionBloqueada) {
+        return;
+    }
+
+    const toque = evento.changedTouches[0];
+    const diferenciaY = toque.clientY - inicioToqueY;
+    const diferenciaX = toque.clientX - inicioToqueX;
+    const esGestoVertical = Math.abs(diferenciaY) > 55 &&
+        Math.abs(diferenciaY) > Math.abs(diferenciaX) * 1.15;
+
+    if (!esGestoVertical) {
+        return;
+    }
+
+    evento.preventDefault();
+    ignorarSiguienteClick = true;
+
+    window.setTimeout(() => {
+        ignorarSiguienteClick = false;
+    }, 450);
+
+    if (diferenciaY < 0) {
+        irAnterior();
+    } else {
+        irSiguiente();
+    }
+}, { passive: false });
+
+// Respaldo accesible con teclado.
+mazoCartas.addEventListener("keydown", (evento) => {
+    if (["ArrowDown", "PageDown", "ArrowRight", "Enter", " "].includes(evento.key)) {
+        evento.preventDefault();
+        irSiguiente();
+    }
+
+    if (["ArrowUp", "PageUp", "ArrowLeft"].includes(evento.key)) {
+        evento.preventDefault();
+        irAnterior();
+    }
+});
+
+/**
+ * Confirmación en Firestore y apertura del mensaje de WhatsApp.
+ */
+btnConfirmar.addEventListener("click", async (evento) => {
+    evento.stopPropagation();
+
+    if (!idDocumentoInvitado) {
+        alert("No pudimos identificar tu registro. Recarga la invitación e intenta nuevamente.");
+        return;
+    }
+
+    const numeroWhatsApp = "529516560060";
+    const mensajeWhatsApp =
+        `Hola, confirmo mi asistencia al baby shower de Ketsia. ` +
+        `Mi nombre es ${nombreInvitadoActual}. ` +
+        `¡Muchas gracias por la invitación!`;
+
+    const enlaceWhatsApp =
+        `https://wa.me/${numeroWhatsApp}?text=${encodeURIComponent(mensajeWhatsApp)}`;
+
+    const ventanaWhatsApp = window.open("", "_blank");
+
+    try {
+        btnConfirmar.disabled = true;
+        btnConfirmar.textContent = "Confirmando...";
+
+        const invitadoRef = doc(db, "invitados", idDocumentoInvitado);
+
+        await updateDoc(invitadoRef, {
+            asistencia_confirmada: true,
+            fecha_confirmacion: new Date()
+        });
+
+        btnConfirmar.textContent = "¡Asistencia confirmada!";
+
+        if (ventanaWhatsApp) {
+            ventanaWhatsApp.location.href = enlaceWhatsApp;
+        } else {
+            window.location.href = enlaceWhatsApp;
+        }
+
+    } catch (error) {
+        console.error("Error al confirmar asistencia:", error);
+
+        if (ventanaWhatsApp) {
+            ventanaWhatsApp.close();
+        }
+
+        btnConfirmar.disabled = false;
+        btnConfirmar.textContent = "Confirmar asistencia";
+        alert("Hubo un problema al confirmar. Intenta nuevamente.");
+    }
+});
+
+// ==============================================================
+// CONTADOR REGRESIVO — 9 de agosto de 2026, 3:00 p. m.
+// ==============================================================
+const fechaBabyShower = new Date(2026, 7, 9, 15, 0, 0).getTime();
+
 function actualizarContador() {
     const ahora = Date.now();
-
-    const distancia =
-        fechaBabyShower - ahora;
+    const distancia = fechaBabyShower - ahora;
 
     if (distancia <= 0) {
-        const contenedorContador =
-            document.getElementById(
-                "contenedor-contador"
-            );
-
-        contenedorContador.innerHTML =
+        document.getElementById("contenedor-contador").innerHTML =
             "<h2>¡Hoy es el gran día!</h2>";
-
         return false;
     }
 
-    const dias = Math.floor(
-        distancia /
-        (1000 * 60 * 60 * 24)
-    );
-
+    const dias = Math.floor(distancia / (1000 * 60 * 60 * 24));
     const horas = Math.floor(
-        (
-            distancia %
-            (1000 * 60 * 60 * 24)
-        ) /
-        (1000 * 60 * 60)
+        (distancia % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)
     );
-
     const minutos = Math.floor(
-        (
-            distancia %
-            (1000 * 60 * 60)
-        ) /
-        (1000 * 60)
+        (distancia % (1000 * 60 * 60)) / (1000 * 60)
     );
-
     const segundos = Math.floor(
-        (
-            distancia %
-            (1000 * 60)
-        ) /
-        1000
+        (distancia % (1000 * 60)) / 1000
     );
 
-    document.getElementById(
-        "dias"
-    ).textContent =
-        String(dias).padStart(2, "0");
-
-    document.getElementById(
-        "horas"
-    ).textContent =
-        String(horas).padStart(2, "0");
-
-    document.getElementById(
-        "minutos"
-    ).textContent =
-        String(minutos).padStart(2, "0");
-
-    document.getElementById(
-        "segundos"
-    ).textContent =
-        String(segundos).padStart(2, "0");
+    document.getElementById("dias").textContent = String(dias).padStart(2, "0");
+    document.getElementById("horas").textContent = String(horas).padStart(2, "0");
+    document.getElementById("minutos").textContent = String(minutos).padStart(2, "0");
+    document.getElementById("segundos").textContent = String(segundos).padStart(2, "0");
 
     return true;
 }
 
 actualizarContador();
 
-/**
- * Actualizamos el contador cada segundo.
- */
-const intervaloReloj =
-    window.setInterval(() => {
-        const continuar =
-            actualizarContador();
+const intervaloReloj = window.setInterval(() => {
+    const continuar = actualizarContador();
 
-        if (!continuar) {
-            window.clearInterval(
-                intervaloReloj
-            );
-        }
-    }, 1000);
+    if (!continuar) {
+        window.clearInterval(intervaloReloj);
+    }
+}, 1000);
