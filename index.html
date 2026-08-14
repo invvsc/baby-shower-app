@@ -3,7 +3,23 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-    <title>Baby Shower de Ketsia</title>
+    <title>Baby Shower de Ketzia Hazel</title>
+    <link rel="preload" as="image" href="./assets/img/p1.png">
+    <link rel="preload" as="image" href="./assets/img/p2.png">
+    <link rel="preload" as="image" href="./assets/img/p3.png">
+    <link rel="preload" as="image" href="./assets/img/p4.png">
+    <link rel="preload" as="image" href="./assets/img/p5.png">
+    <link rel="preload" as="image" href="./assets/img/p6.png">
+    <link rel="preload" as="image" href="./assets/img/bird.png">
+    <link rel="preload" as="image" href="./assets/img/b1.png">
+    <link rel="preload" as="image" href="./assets/img/b2.png">
+    <link rel="preload" as="image" href="./assets/img/b3.png">
+    <link rel="preload" as="image" href="./assets/img/b4.png">
+    <link rel="preload" as="image" href="./assets/img/b5.png">
+    <link rel="preload" as="image" href="./assets/img/r1.png">
+    <link rel="preload" as="image" href="./assets/img/tip1.png">
+    <link rel="preload" as="image" href="./assets/img/tip2.png">
+    <link rel="preload" as="image" href="./assets/img/tip3.png">
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -20,7 +36,7 @@
 
             <button
                 id="carta-inicial"
-                class="grafico-temporal grafico-carta"
+                class="grafico-carta"
                 type="button"
                 aria-label="Toca la carta para abrir la invitación"
             >
@@ -34,13 +50,26 @@
             <div class="composicion-nombre">
                 <div
                     id="grafico-sobre-trasero"
-                    class="grafico-temporal grafico-sobre-trasero"
+                    class="grafico-sobre-trasero"
                     aria-hidden="true"
-                >
-                    SOBRE
+                ></div>
+
+                <div class="fotos-dispersas" aria-label="Fotos de Ketzia Hazel">
+                    <button class="foto-dispersa foto-dispersa--1 foto-ampliable" type="button" aria-label="Ampliar foto 1 de Ketzia Hazel">
+                        <img src="./assets/img/b1.png" alt="Ketzia Hazel, foto 1" draggable="false" decoding="async">
+                    </button>
+                    <button class="foto-dispersa foto-dispersa--2 foto-ampliable" type="button" aria-label="Ampliar foto 2 de Ketzia Hazel">
+                        <img src="./assets/img/b2.png" alt="Ketzia Hazel, foto 2" draggable="false" decoding="async">
+                    </button>
+                    <button class="foto-dispersa foto-dispersa--3 foto-ampliable" type="button" aria-label="Ampliar foto 3 de Ketzia Hazel">
+                        <img src="./assets/img/b3.png" alt="Ketzia Hazel, foto 3" draggable="false" decoding="async">
+                    </button>
+                    <button class="foto-dispersa foto-dispersa--4 foto-ampliable" type="button" aria-label="Ampliar foto 4 de Ketzia Hazel">
+                        <img src="./assets/img/b4.png" alt="Ketzia Hazel, foto 4" draggable="false" decoding="async">
+                    </button>
                 </div>
 
-                <div id="grafico-papel" class="grafico-temporal grafico-papel">
+                <div id="grafico-papel" class="grafico-papel">
                     <label for="nombre-invitado">Invitado:</label>
                     <input
                         id="nombre-invitado"
@@ -61,36 +90,74 @@
             <div class="cargador-circular" aria-hidden="true"></div>
             <p id="estado-consulta" role="status">Consultando invitados...</p>
         </section>
+
     </main>
 
     <!-- =========================================================
          FASE 2
-         Cortina de globos y cinco hojas apiladas.
-         Cada gráfico rojo puede sustituirse después por imágenes.
+         30 globos flotantes, versículo y cinco hojas apiladas.
+         La decoración posterior usa p1.png a p6.png.
     ========================================================== -->
     <main id="fase-dos" class="fase fase--oculta" aria-live="polite">
-        <!-- Transición temporal de globos. Cada elemento puede usar
-             background-image: url('./assets/img/globo-X.png'). -->
-        <div id="transicion-globos" class="transicion-globos" aria-hidden="true">
-            <div class="grafico-temporal globo-transicion" style="--x: -3%; --tam: 142px; --delay: 0ms; --dur: 2500ms; --giro: -10deg;"><span>GLOBO</span></div>
-            <div class="grafico-temporal globo-transicion" style="--x: 5%; --tam: 108px; --delay: 190ms; --dur: 2400ms; --giro: 8deg;"><span>GLOBO</span></div>
-            <div class="grafico-temporal globo-transicion" style="--x: 12%; --tam: 156px; --delay: 420ms; --dur: 2550ms; --giro: -5deg;"><span>GLOBO</span></div>
-            <div class="grafico-temporal globo-transicion" style="--x: 20%; --tam: 96px; --delay: 80ms; --dur: 2250ms; --giro: 12deg;"><span>GLOBO</span></div>
-            <div class="grafico-temporal globo-transicion" style="--x: 27%; --tam: 132px; --delay: 610ms; --dur: 2480ms; --giro: -12deg;"><span>GLOBO</span></div>
-            <div class="grafico-temporal globo-transicion" style="--x: 34%; --tam: 112px; --delay: 270ms; --dur: 2320ms; --giro: 5deg;"><span>GLOBO</span></div>
-            <div class="grafico-temporal globo-transicion" style="--x: 41%; --tam: 166px; --delay: 760ms; --dur: 2550ms; --giro: -7deg;"><span>GLOBO</span></div>
-            <div class="grafico-temporal globo-transicion" style="--x: 49%; --tam: 104px; --delay: 120ms; --dur: 2360ms; --giro: 10deg;"><span>GLOBO</span></div>
-            <div class="grafico-temporal globo-transicion" style="--x: 56%; --tam: 148px; --delay: 500ms; --dur: 2460ms; --giro: -9deg;"><span>GLOBO</span></div>
-            <div class="grafico-temporal globo-transicion" style="--x: 64%; --tam: 90px; --delay: 330ms; --dur: 2200ms; --giro: 7deg;"><span>GLOBO</span></div>
-            <div class="grafico-temporal globo-transicion" style="--x: 70%; --tam: 138px; --delay: 820ms; --dur: 2520ms; --giro: -11deg;"><span>GLOBO</span></div>
-            <div class="grafico-temporal globo-transicion" style="--x: 78%; --tam: 116px; --delay: 210ms; --dur: 2380ms; --giro: 6deg;"><span>GLOBO</span></div>
-            <div class="grafico-temporal globo-transicion" style="--x: 85%; --tam: 158px; --delay: 570ms; --dur: 2580ms; --giro: -6deg;"><span>GLOBO</span></div>
-            <div class="grafico-temporal globo-transicion" style="--x: 93%; --tam: 106px; --delay: 390ms; --dur: 2300ms; --giro: 11deg;"><span>GLOBO</span></div>
-            <div class="grafico-temporal globo-transicion globo-transicion--fondo" style="--x: 1%; --tam: 92px; --delay: 900ms; --dur: 2220ms; --giro: 4deg;"><span>GLOBO</span></div>
-            <div class="grafico-temporal globo-transicion globo-transicion--fondo" style="--x: 23%; --tam: 102px; --delay: 980ms; --dur: 2300ms; --giro: -8deg;"><span>GLOBO</span></div>
-            <div class="grafico-temporal globo-transicion globo-transicion--fondo" style="--x: 47%; --tam: 118px; --delay: 1040ms; --dur: 2420ms; --giro: 9deg;"><span>GLOBO</span></div>
-            <div class="grafico-temporal globo-transicion globo-transicion--fondo" style="--x: 72%; --tam: 96px; --delay: 940ms; --dur: 2280ms; --giro: -5deg;"><span>GLOBO</span></div>
-            <div class="grafico-temporal globo-transicion globo-transicion--fondo" style="--x: 91%; --tam: 126px; --delay: 1080ms; --dur: 2460ms; --giro: 8deg;"><span>GLOBO</span></div>
+        <!-- Transición de 30 globos generados con CSS. -->
+                <div id="transicion-globos" class="transicion-globos" aria-hidden="true">
+            <div class="globo-transicion" style="--x:-3%; --tam:120px; --delay:0ms; --dur:2600ms; --giro:-8deg;"></div>
+            <div class="globo-transicion" style="--x:4%; --tam:92px; --delay:110ms; --dur:2450ms; --giro:5deg;"></div>
+            <div class="globo-transicion" style="--x:10%; --tam:138px; --delay:220ms; --dur:2700ms; --giro:-4deg;"></div>
+            <div class="globo-transicion" style="--x:16%; --tam:104px; --delay:330ms; --dur:2520ms; --giro:7deg;"></div>
+            <div class="globo-transicion" style="--x:22%; --tam:150px; --delay:440ms; --dur:2780ms; --giro:-10deg;"></div>
+            <div class="globo-transicion" style="--x:28%; --tam:88px; --delay:550ms; --dur:2400ms; --giro:3deg;"></div>
+            <div class="globo-transicion" style="--x:34%; --tam:126px; --delay:660ms; --dur:2660ms; --giro:-6deg;"></div>
+            <div class="globo-transicion" style="--x:40%; --tam:110px; --delay:770ms; --dur:2480ms; --giro:8deg;"></div>
+            <div class="globo-transicion" style="--x:46%; --tam:144px; --delay:880ms; --dur:2740ms; --giro:-5deg;"></div>
+            <div class="globo-transicion" style="--x:52%; --tam:96px; --delay:990ms; --dur:2500ms; --giro:6deg;"></div>
+            <div class="globo-transicion" style="--x:58%; --tam:132px; --delay:1100ms; --dur:2680ms; --giro:-9deg;"></div>
+            <div class="globo-transicion" style="--x:64%; --tam:102px; --delay:1210ms; --dur:2460ms; --giro:4deg;"></div>
+            <div class="globo-transicion" style="--x:70%; --tam:156px; --delay:1320ms; --dur:2800ms; --giro:-7deg;"></div>
+            <div class="globo-transicion" style="--x:76%; --tam:90px; --delay:1430ms; --dur:2420ms; --giro:9deg;"></div>
+            <div class="globo-transicion" style="--x:82%; --tam:118px; --delay:1540ms; --dur:2620ms; --giro:-3deg;"></div>
+            <div class="globo-transicion" style="--x:88%; --tam:136px; --delay:1650ms; --dur:2720ms; --giro:5deg;"></div>
+            <div class="globo-transicion" style="--x:94%; --tam:100px; --delay:1760ms; --dur:2490ms; --giro:-8deg;"></div>
+            <div class="globo-transicion" style="--x:1%; --tam:146px; --delay:1870ms; --dur:2760ms; --giro:7deg;"></div>
+            <div class="globo-transicion" style="--x:13%; --tam:84px; --delay:1980ms; --dur:2380ms; --giro:-4deg;"></div>
+            <div class="globo-transicion" style="--x:25%; --tam:124px; --delay:2090ms; --dur:2640ms; --giro:6deg;"></div>
+            <div class="globo-transicion" style="--x:37%; --tam:112px; --delay:2200ms; --dur:2540ms; --giro:-10deg;"></div>
+            <div class="globo-transicion" style="--x:49%; --tam:152px; --delay:2310ms; --dur:2820ms; --giro:3deg;"></div>
+            <div class="globo-transicion" style="--x:61%; --tam:94px; --delay:2420ms; --dur:2440ms; --giro:-6deg;"></div>
+            <div class="globo-transicion" style="--x:73%; --tam:130px; --delay:2530ms; --dur:2690ms; --giro:8deg;"></div>
+            <div class="globo-transicion" style="--x:85%; --tam:108px; --delay:2640ms; --dur:2510ms; --giro:-5deg;"></div>
+            <div class="globo-transicion" style="--x:7%; --tam:142px; --delay:2750ms; --dur:2750ms; --giro:7deg;"></div>
+            <div class="globo-transicion" style="--x:31%; --tam:98px; --delay:2860ms; --dur:2470ms; --giro:-9deg;"></div>
+            <div class="globo-transicion" style="--x:55%; --tam:122px; --delay:2970ms; --dur:2630ms; --giro:4deg;"></div>
+            <div class="globo-transicion" style="--x:79%; --tam:148px; --delay:3080ms; --dur:2790ms; --giro:-7deg;"></div>
+            <div class="globo-transicion" style="--x:91%; --tam:86px; --delay:3190ms; --dur:2410ms; --giro:6deg;"></div>
+        </div>
+
+        <!-- Pausa contemplativa entre los globos y el mazo de cartas. -->
+        <section id="escena-versiculo" class="escena-versiculo" aria-label="Versículo bíblico">
+            <div class="pajaro-versiculo" aria-hidden="true">
+                <img src="./assets/img/bird.png" alt="" draggable="false" decoding="async">
+            </div>
+            <blockquote class="versiculo">
+                <p>“He aquí, herencia de Jehová son los hijos.”</p>
+                <cite>Salmo 127:3</cite>
+            </blockquote>
+        </section>
+
+        <div id="decoracion-fondo" class="decoracion-fondo" aria-hidden="true">
+            <span class="decoracion-png decoracion-png--secundaria decoracion-png--fondo-1" data-escala="0.68"><img src="./assets/img/p4.png" alt="" draggable="false" decoding="async"></span>
+            <span class="decoracion-png decoracion-png--secundaria decoracion-png--fondo-2" data-escala="0.60"><img src="./assets/img/p6.png" alt="" draggable="false" decoding="async"></span>
+            <span class="decoracion-png decoracion-png--secundaria decoracion-png--fondo-3" data-escala="0.72"><img src="./assets/img/p2.png" alt="" draggable="false" decoding="async"></span>
+            <span class="decoracion-png decoracion-png--secundaria decoracion-png--fondo-4" data-escala="0.64"><img src="./assets/img/p5.png" alt="" draggable="false" decoding="async"></span>
+            <span class="decoracion-png decoracion-png--secundaria decoracion-png--fondo-5" data-escala="0.66"><img src="./assets/img/p1.png" alt="" draggable="false" decoding="async"></span>
+            <span class="decoracion-png decoracion-png--secundaria decoracion-png--fondo-6" data-escala="0.62"><img src="./assets/img/p3.png" alt="" draggable="false" decoding="async"></span>
+
+            <span class="decoracion-png decoracion-png--principal decoracion-png--1" data-escala="1.02"><img src="./assets/img/p1.png" alt="" draggable="false" decoding="async"></span>
+            <span class="decoracion-png decoracion-png--principal decoracion-png--2" data-escala="0.92"><img src="./assets/img/p2.png" alt="" draggable="false" decoding="async"></span>
+            <span class="decoracion-png decoracion-png--principal decoracion-png--3" data-escala="1.08"><img src="./assets/img/p3.png" alt="" draggable="false" decoding="async"></span>
+            <span class="decoracion-png decoracion-png--principal decoracion-png--4" data-escala="1.04"><img src="./assets/img/p4.png" alt="" draggable="false" decoding="async"></span>
+            <span class="decoracion-png decoracion-png--principal decoracion-png--5" data-escala="0.94"><img src="./assets/img/p5.png" alt="" draggable="false" decoding="async"></span>
+            <span class="decoracion-png decoracion-png--principal decoracion-png--6" data-escala="1"><img src="./assets/img/p6.png" alt="" draggable="false" decoding="async"></span>
         </div>
 
         <section id="escena-cartas" class="escena-cartas" aria-label="Información del Baby Shower">
@@ -103,59 +170,102 @@
             >
                 <!-- HOJA 1 -->
                 <article class="grafico-temporal carta-info carta-info--1" data-carta="0" aria-hidden="false">
-                    <span class="etiqueta-grafico">HOJA 1 · GRÁFICO TEMPORAL</span>
-                    <div class="carta-contenido">
-                        <p class="sobretitulo">Con mucha alegría</p>
-                        <h2 id="saludo-invitado">¡Hola!</h2>
-                        <p class="texto-cordial">
-                            Tenemos el gusto de invitarte a celebrar con nosotros el
-                        </p>
-                        <h1>Baby Shower de Ketsia</h1>
-                        <p class="texto-secundario">
-                            Tu presencia hará este día todavía más especial.
-                        </p>
+                    <div class="carta-contenido carta-contenido--presentacion carta-contenido--secuencia">
+                        <div id="carta1-saludo" class="escena-carta escena-carta--saludo">
+                            <h2 id="saludo-invitado">¡Hola!</h2>
+                        </div>
+
+                        <div id="carta1-invitacion" class="escena-carta escena-carta--invitacion">
+                            <p class="texto-cordial texto-invitacion-secuencia">Tenemos el gusto de invitarte a celebrar con nosotros</p>
+
+                            <div id="carta1-final" class="informacion-presentacion-final">
+                                <p class="titulo-baby-shower">El Baby Shower de</p>
+                                <h1 class="nombre-bebe texto-escritura" data-texto-completo="Ketzia Hazel" aria-label="Ketzia Hazel">
+                                    <span class="texto-escritura-medida" aria-hidden="true">Ketzia Hazel</span>
+                                    <span class="texto-escritura-visible" aria-hidden="true">Ketzia Hazel</span>
+                                </h1>
+                                <figure class="foto-bebe-carta">
+                                    <img src="./assets/img/b5.png" alt="Ketzia Hazel" draggable="false" decoding="async">
+                                </figure>
+                                <p class="texto-secundario texto-escritura" data-texto-completo="Tu presencia hará este día todavía más especial." aria-label="Tu presencia hará este día todavía más especial.">
+                                    <span class="texto-escritura-medida" aria-hidden="true">Tu presencia hará este día todavía más especial.</span>
+                                    <span class="texto-escritura-visible" aria-hidden="true">Tu presencia hará este día todavía más especial.</span>
+                                </p>
+                            </div>
+                        </div>
                     </div>
                     <span class="numero-hoja">1 / 5</span>
                 </article>
 
                 <!-- HOJA 2 -->
                 <article class="grafico-temporal carta-info carta-info--2" data-carta="1" aria-hidden="true">
-                    <span class="etiqueta-grafico">HOJA 2 · GRÁFICO TEMPORAL</span>
-                    <div class="carta-contenido">
-                        <p class="sobretitulo">Fecha y hora del evento</p>
-                        <h2>9 de agosto de 2026</h2>
-                        <p class="hora-evento">3:00 p. m.</p>
+                    <div class="carta-contenido carta-contenido--secuencia carta-contenido--fecha">
+                        <div id="carta2-tiempo" class="escena-carta escena-carta--titular">
+                            <h2 class="titular-central">¡El tiempo ya está corriendo!</h2>
+                        </div>
 
-                        <div id="contenedor-contador" aria-label="Cuenta regresiva para el evento">
-                            <div class="bloque-tiempo">
-                                <span id="dias">00</span>
-                                <p>Días</p>
-                            </div>
-                            <div class="bloque-tiempo">
-                                <span id="horas">00</span>
-                                <p>Horas</p>
-                            </div>
-                            <div class="bloque-tiempo">
-                                <span id="minutos">00</span>
-                                <p>Min</p>
-                            </div>
-                            <div class="bloque-tiempo">
-                                <span id="segundos">00</span>
-                                <p>Seg</p>
+                        <div id="carta2-final" class="escena-carta escena-carta--fecha-final">
+                            <h2 class="titular-espera">Y te esperamos el día</h2>
+                            <div id="carta2-info" class="informacion-fecha">
+                                <p class="fecha-evento-completa">Domingo 6 de septiembre de 2026 a las 4:00 p. m.</p>
+
+                                <div id="contenedor-contador" aria-label="Cuenta regresiva para el evento">
+                                    <div class="bloque-tiempo">
+                                        <span id="dias">00</span>
+                                        <p>Días</p>
+                                    </div>
+                                    <div class="bloque-tiempo">
+                                        <span id="horas">00</span>
+                                        <p>Horas</p>
+                                    </div>
+                                    <div class="bloque-tiempo">
+                                        <span id="minutos">00</span>
+                                        <p>Min</p>
+                                    </div>
+                                    <div class="bloque-tiempo">
+                                        <span id="segundos">00</span>
+                                        <p>Seg</p>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
                     <span class="numero-hoja">2 / 5</span>
                 </article>
 
-                <!-- HOJA 3 -->
+                <!-- HOJA 3 · UBICACIÓN -->
                 <article class="grafico-temporal carta-info carta-info--3" data-carta="2" aria-hidden="true">
-                    <span class="etiqueta-grafico">HOJA 3 · GRÁFICO TEMPORAL</span>
-                    <div class="carta-contenido carta-contenido--centrado">
-                        <p class="sobretitulo">Nos encontraremos en</p>
-                        <h2>Ubicación</h2>
-                        <div class="marcador-ubicacion" aria-hidden="true">
-                            ESPACIO PARA UBICACIÓN
+                    <div class="carta-contenido carta-contenido--ubicacion">
+                        <p class="sobretitulo ubicacion-sobretitulo">Nos encontraremos en</p>
+                        <h2 class="ubicacion-titulo">Salón Casari</h2>
+
+                        <div class="mapa-evento-bloque">
+                            <div
+                                id="mapa-evento-wrap"
+                                class="mapa-evento-wrap"
+                                data-interactivo="true"
+                                aria-label="Mapa interactivo de Salón Casari"
+                            >
+                                <div id="mapa-evento" class="mapa-evento"></div>
+                            </div>
+
+                            <div class="datos-ubicacion">
+                                <strong id="nombre-lugar">Salón Casari</strong>
+                                <span id="direccion-lugar">
+                                    Esquina Privada Emiliano Zapata · Col. Roma<br>
+                                    Santa Lucía del Camino, Oaxaca de Juárez, Oaxaca
+                                </span>
+                            </div>
+
+                            <div class="acciones-mapa" data-interactivo="true">
+                                <button
+                                    id="btn-abrir-maps"
+                                    class="btn-mapa"
+                                    type="button"
+                                >
+                                    Abrir en Maps
+                                </button>
+                            </div>
                         </div>
                     </div>
                     <span class="numero-hoja">3 / 5</span>
@@ -163,15 +273,18 @@
 
                 <!-- HOJA 4 -->
                 <article class="grafico-temporal carta-info carta-info--4" data-carta="3" aria-hidden="true">
-                    <span class="etiqueta-grafico">HOJA 4 · GRÁFICO TEMPORAL</span>
-                    <div class="carta-contenido">
-                        <p class="sobretitulo">Mesa de regalos</p>
-                        <h2>Algunas ideas para Ketsia</h2>
+                    <div class="regalo-animado" aria-hidden="true">
+                        <img src="./assets/img/r1.png" alt="" draggable="false" decoding="async">
+                    </div>
+                    <div class="carta-contenido carta-contenido--regalos">
+                        <img class="regalo-cabecera" src="./assets/img/r1.png" alt="" draggable="false" decoding="async">
+                        <p class="sobretitulo">Si deseas llevarle un detallito</p>
+                        <h2>Podrías pensar en esto para sus primeros meses</h2>
                         <ul class="lista-regalos">
-                            <li>Pañales en tallas mediana y grande.</li>
-                            <li>Toallitas húmedas sin fragancia.</li>
-                            <li>Ropita de 3 a 9 meses.</li>
-                            <li>Artículos de baño y cuidado para bebé.</li>
+                            <li>Pañales para recién nacida y etapa 1.</li>
+                            <li>Toallitas sin fragancia y artículos de higiene.</li>
+                            <li>Bodies, mamelucos o pijamas de 0 a 3 meses.</li>
+                            <li>Mantitas suaves, baberos o toallas con capucha.</li>
                         </ul>
                         <p class="texto-secundario">
                             Lo más importante para nosotros es compartir este momento contigo.
@@ -182,19 +295,62 @@
 
                 <!-- HOJA 5 -->
                 <article class="grafico-temporal carta-info carta-info--5" data-carta="4" aria-hidden="true">
-                    <span class="etiqueta-grafico">HOJA 5 · GRÁFICO TEMPORAL</span>
-                    <div class="carta-contenido">
-                        <p class="sobretitulo">Consideraciones</p>
-                        <h2>Antes de acompañarnos</h2>
-                        <ul class="lista-consideraciones">
-                            <li>Te recomendamos llegar 15 minutos antes.</li>
-                            <li>Confirma tu asistencia para preparar todo con cariño.</li>
-                            <li>Comparte cualquier consideración especial con la familia.</li>
-                        </ul>
+                    <div class="carta-contenido carta-contenido--secuencia carta-contenido--consideraciones">
+                        <div id="carta5-titulo" class="escena-carta escena-carta--titular">
+                            <h2 class="titular-central">Y antes de acompañarnos</h2>
+                        </div>
 
-                        <button id="btn-confirmar" type="button">
-                            Confirmar asistencia
-                        </button>
+                        <div id="carta5-tip1" class="escena-carta escena-carta--tip">
+                            <img class="tip-imagen" src="./assets/img/tip1.png" alt="" draggable="false" decoding="async">
+                            <p>Te recomendamos llegar 15 minutos antes.</p>
+                        </div>
+
+                        <div id="carta5-tip2" class="escena-carta escena-carta--tip">
+                            <img class="tip-imagen" src="./assets/img/tip2.png" alt="" draggable="false" decoding="async">
+                            <p>Confirma tu asistencia para preparar todo con cariño.</p>
+                        </div>
+
+                        <div id="carta5-tip3" class="escena-carta escena-carta--tip">
+                            <img class="tip-imagen" src="./assets/img/tip3.png" alt="" draggable="false" decoding="async">
+                            <p>¡Ven con toda tu alegría y ganas de compartir este día con nosotros!</p>
+                        </div>
+
+                        <div id="carta5-final" class="escena-carta escena-carta--consideraciones-final">
+                            <div id="decoracion-carta5" class="decoracion-carta5">
+                                <div class="tips-carta5" aria-hidden="true">
+                                    <span class="tip-carta5 tip-carta5--1"><img src="./assets/img/tip1.png" alt="" draggable="false"></span>
+                                    <span class="tip-carta5 tip-carta5--2"><img src="./assets/img/tip2.png" alt="" draggable="false"></span>
+                                    <span class="tip-carta5 tip-carta5--3"><img src="./assets/img/tip3.png" alt="" draggable="false"></span>
+                                </div>
+
+                                <p class="sobretitulo">Consideraciones</p>
+                                <h2>Antes de acompañarnos</h2>
+                                <ul class="lista-consideraciones">
+                                    <li>Te recomendamos llegar 15 minutos antes.</li>
+                                    <li>Confirma tu asistencia para preparar todo con cariño.</li>
+                                    <li>Ven con alegría y ganas de compartir este día con nosotros.</li>
+                                </ul>
+
+                                <div class="fotos-carta5" aria-label="Fotos de Ketzia Hazel">
+                                    <button class="foto-carta5 foto-carta5--1 foto-ampliable" type="button" aria-label="Ampliar foto 1 de Ketzia Hazel">
+                                        <img src="./assets/img/b1.png" alt="Ketzia Hazel, foto 1" draggable="false" decoding="async">
+                                    </button>
+                                    <button class="foto-carta5 foto-carta5--2 foto-ampliable" type="button" aria-label="Ampliar foto 2 de Ketzia Hazel">
+                                        <img src="./assets/img/b2.png" alt="Ketzia Hazel, foto 2" draggable="false" decoding="async">
+                                    </button>
+                                    <button class="foto-carta5 foto-carta5--3 foto-ampliable" type="button" aria-label="Ampliar foto 3 de Ketzia Hazel">
+                                        <img src="./assets/img/b3.png" alt="Ketzia Hazel, foto 3" draggable="false" decoding="async">
+                                    </button>
+                                    <button class="foto-carta5 foto-carta5--4 foto-ampliable" type="button" aria-label="Ampliar foto 4 de Ketzia Hazel">
+                                        <img src="./assets/img/b4.png" alt="Ketzia Hazel, foto 4" draggable="false" decoding="async">
+                                    </button>
+                                </div>
+
+                                <button id="btn-confirmar" type="button">
+                                    Confirmar asistencia
+                                </button>
+                            </div>
+                        </div>
                     </div>
                     <span class="numero-hoja">5 / 5</span>
                 </article>
@@ -222,6 +378,18 @@
             </nav>
         </section>
     </main>
+
+    <div
+        id="visor-foto"
+        class="visor-foto"
+        role="dialog"
+        aria-modal="true"
+        aria-label="Vista ampliada de una foto de Ketzia Hazel"
+        aria-hidden="true"
+        tabindex="-1"
+    >
+        <img id="visor-foto-imagen" src="./assets/img/b1.png" alt="">
+    </div>
 
     <audio id="musica-fondo" loop preload="auto">
         <source src="assets/cancion.mp3" type="audio/mpeg">
