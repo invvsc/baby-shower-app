@@ -89,6 +89,7 @@ let idDocumentoInvitado = "";
 let nombreInvitadoActual = "";
 let enviandoNombre = false;
 let musicaPreparada = false;
+let musicaPausadaPorVisibilidad = false;
 let temporizadorVisorFoto = 0;
 let temporizadorSalidaVisorFoto = 0;
 let botonFotoActivo = null;
@@ -180,7 +181,7 @@ function animarCartaRegalos() {
 
     const duracion = window.matchMedia("(prefers-reduced-motion: reduce)").matches
         ? 80
-        : 2800;
+        : 4300;
 
     temporizadorRegalo = window.setTimeout(() => {
         cartaRegalos.classList.remove("carta-regalo--animando");
@@ -611,6 +612,12 @@ async function reproducirMusica() {
         musica.currentTime = 0;
         musica.muted = false;
 
+        if (document.visibilityState === "hidden") {
+            musicaPausadaPorVisibilidad = true;
+            musica.pause();
+            return;
+        }
+
         if (musica.paused) {
             await musica.play();
         }
@@ -628,7 +635,42 @@ function cancelarMusicaPreparada() {
     musica.currentTime = 0;
     musica.muted = false;
     musicaPreparada = false;
+    musicaPausadaPorVisibilidad = false;
 }
+
+function pausarMusicaPorVisibilidad() {
+    if (!musica || musica.paused) {
+        return;
+    }
+
+    musicaPausadaPorVisibilidad = true;
+    musica.pause();
+}
+
+async function reanudarMusicaPorVisibilidad() {
+    if (!musica || !musicaPausadaPorVisibilidad || document.visibilityState === "hidden") {
+        return;
+    }
+
+    try {
+        await musica.play();
+        musicaPausadaPorVisibilidad = false;
+    } catch (error) {
+        console.info("El navegador no permitió reanudar la música:", error);
+    }
+}
+
+document.addEventListener("visibilitychange", () => {
+    if (document.visibilityState === "hidden") {
+        pausarMusicaPorVisibilidad();
+        return;
+    }
+
+    reanudarMusicaPorVisibilidad();
+});
+
+window.addEventListener("pagehide", pausarMusicaPorVisibilidad);
+window.addEventListener("pageshow", reanudarMusicaPorVisibilidad);
 
 /**
  * Registra en Firestore que la persona abrió la invitación.
@@ -1063,7 +1105,7 @@ btnConfirmar.addEventListener("click", async (evento) => {
         return;
     }
 
-    const numeroWhatsApp = "529516560060";
+    const numeroWhatsApp = "529513570663";
     const mensajeWhatsApp =
         `Hola, confirmo mi asistencia al baby shower de Ketzia Hazel. ` +
         `Mi nombre es ${nombreInvitadoActual}. ` +

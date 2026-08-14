@@ -1389,38 +1389,99 @@ button {
 }
 
 .carta-contenido--regalos {
-    gap: clamp(5px, 1.1vh, 10px);
-}
-
-.regalo-cabecera {
-    display: block;
-    width: clamp(72px, 17vw, 124px);
-    max-height: 20%;
-    object-fit: contain;
-    filter: drop-shadow(0 10px 16px rgba(93, 61, 61, 0.14));
+    gap: clamp(12px, 2.4vh, 22px);
 }
 
 .carta-info--4 .carta-contenido--regalos h2 {
-    max-width: 34ch;
-    font-size: clamp(0.98rem, 3.5vw, 1.7rem);
-    line-height: 1.12;
-    letter-spacing: 0.025em;
+    max-width: 25ch;
+    font-size: clamp(1.35rem, 5vw, 2.45rem);
+    line-height: 1.08;
+    letter-spacing: 0.035em;
     text-transform: uppercase;
     text-wrap: balance;
 }
 
-.carta-info--4 .lista-regalos {
-    font-size: clamp(1.08rem, 3.9vw, 1.34rem);
-    line-height: 1.34;
+.lista-deseos-accion {
+    position: relative;
+    width: min(100%, 430px);
+    min-height: clamp(112px, 24vw, 152px);
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    margin-top: clamp(8px, 2vh, 18px);
+    isolation: isolate;
 }
 
-.carta-info--4 .texto-secundario {
-    max-width: 42ch;
-    font-size: clamp(0.84rem, 2.9vw, 1.02rem);
-    font-weight: 900;
-    line-height: 1.3;
-    letter-spacing: 0.045em;
+.texto-guia-deseos {
+    max-width: 39ch;
+    font-size: clamp(0.74rem, 2.7vw, 0.96rem);
+    font-weight: 400;
+    line-height: 1.4;
+    letter-spacing: 0.055em;
     text-transform: uppercase;
+    text-wrap: balance;
+}
+
+.boton-lista-deseos {
+    position: relative;
+    z-index: 1;
+    width: min(calc(100% - 64px), 340px);
+    min-height: clamp(84px, 18vw, 108px);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+    padding: 12px 28px 11px 18px;
+    border: 2px solid rgba(180, 120, 120, 0.22);
+    border-radius: 22px;
+    color: var(--marron);
+    background: #fff4f6;
+    box-shadow: 0 13px 28px rgba(131, 94, 93, 0.18);
+    text-decoration: none;
+    opacity: 1;
+    transition: transform 220ms ease, box-shadow 220ms ease, background 220ms ease;
+}
+
+.boton-lista-deseos img {
+    display: block;
+    width: clamp(92px, 25vw, 155px);
+    max-width: 78%;
+    max-height: 48px;
+    object-fit: contain;
+}
+
+.boton-lista-deseos span {
+    font-size: clamp(0.66rem, 2.5vw, 0.84rem);
+    font-weight: 900;
+    letter-spacing: 0.09em;
+    text-transform: uppercase;
+}
+
+.boton-lista-deseos:hover,
+.boton-lista-deseos:focus-visible {
+    background: #fff9fa;
+    box-shadow: 0 16px 34px rgba(131, 94, 93, 0.24);
+    transform: translateY(-2px);
+}
+
+.boton-lista-deseos:focus-visible {
+    outline: 3px solid rgba(131, 94, 93, 0.55);
+    outline-offset: 4px;
+}
+
+.regalo-lista-deseos {
+    position: absolute;
+    z-index: 2;
+    top: 50%;
+    right: -2px;
+    width: clamp(104px, 26vw, 152px);
+    max-height: 100%;
+    object-fit: contain;
+    filter: drop-shadow(0 13px 18px rgba(93, 61, 61, 0.23));
+    transform-origin: 52% 88%;
+    pointer-events: none;
+    animation: tambaleo-regalo-deseos 2600ms ease-in-out infinite;
 }
 
 .carta-info--4.carta-regalo--animando .regalo-animado {
@@ -1435,8 +1496,12 @@ button {
     animation: caer-abrir-regalo 2700ms cubic-bezier(0.22, 1, 0.36, 1) both;
 }
 
-.carta-info--4.carta-regalo--animando .regalo-cabecera {
-    animation: aparecer-regalo-cabecera 650ms var(--curva-suave) 2180ms both;
+.carta-info--4.carta-regalo--animando .regalo-lista-deseos {
+    animation: barrido-regalo-deseos 1050ms var(--curva-suave) 2820ms both;
+}
+
+.carta-info--4.carta-regalo--animando .boton-lista-deseos {
+    animation: revelar-boton-lista-deseos 720ms var(--curva-suave) 3260ms both;
 }
 
 .carta-info--4.carta-regalo--animando .carta-contenido--regalos {
@@ -1948,14 +2013,44 @@ button {
     }
 }
 
-@keyframes aparecer-regalo-cabecera {
+@keyframes barrido-regalo-deseos {
     0% {
         opacity: 0;
-        transform: translate3d(0, -10px, 0) scale(0.82);
+        transform: translate3d(-430px, -50%, 0) scale(1.13) rotate(-9deg);
+    }
+    12% {
+        opacity: 1;
+    }
+    72% {
+        opacity: 1;
+        transform: translate3d(-22px, -50%, 0) scale(1.035) rotate(4deg);
     }
     100% {
         opacity: 1;
+        transform: translate3d(0, -50%, 0) scale(1) rotate(0deg);
+    }
+}
+
+@keyframes revelar-boton-lista-deseos {
+    0% {
+        opacity: 0;
+        clip-path: inset(0 100% 0 0 round 22px);
+        transform: translate3d(-12px, 0, 0) scale(0.985);
+    }
+    100% {
+        opacity: 1;
+        clip-path: inset(0 0 0 0 round 22px);
         transform: translate3d(0, 0, 0) scale(1);
+    }
+}
+
+@keyframes tambaleo-regalo-deseos {
+    0%,
+    100% {
+        transform: translate3d(0, -50%, 0) rotate(-2.6deg) scale(1);
+    }
+    50% {
+        transform: translate3d(0, -50%, 0) rotate(2.8deg) scale(1.018);
     }
 }
 
@@ -2119,13 +2214,22 @@ button {
         gap: 5px;
     }
 
-    .regalo-cabecera {
-        width: clamp(54px, 13vw, 84px);
+    .lista-deseos-accion {
+        min-height: 96px;
+        margin-top: 4px;
     }
 
-    .carta-info--4 .lista-regalos {
-        font-size: clamp(0.96rem, 3.35vw, 1.12rem);
-        line-height: 1.25;
+    .regalo-lista-deseos {
+        width: clamp(88px, 21vw, 116px);
+    }
+
+    .boton-lista-deseos {
+        min-height: 74px;
+        padding-block: 8px;
+    }
+
+    .boton-lista-deseos img {
+        max-height: 36px;
     }
 
     .decoracion-carta5 {
