@@ -141,7 +141,7 @@ button {
     width: min(82vw, 380px);
     aspect-ratio: 1.42;
 
-    background-image: url("./assets/img/sobre.png");
+    background-image: url("./assets/img/sobre.webp");
     background-size: contain;
     background-position: center;
     background-repeat: no-repeat;
@@ -203,7 +203,7 @@ button {
     bottom: 2%;
     width: min(100%, 440px);
     height: 100%;
-    background-image: url("./assets/img/sobre2.png");
+    background-image: url("./assets/img/sobre2.webp");
     background-repeat: no-repeat;
     background-position: center bottom;
     background-size: contain;
@@ -225,7 +225,7 @@ button {
     justify-content: center;
     gap: 15px;
     padding: 64px 34px 56px;
-    background-image: url("./assets/img/carta.png");
+    background-image: url("./assets/img/carta.webp");
     background-repeat: no-repeat;
     background-position: center;
     background-size: 100% 100%;
@@ -726,7 +726,7 @@ button {
 
 /* ==============================================================
    DECORACIÓN PNG DETRÁS DE LAS CARTAS
-   Coloca p1.png ... p6.png dentro de assets/img/
+   Coloca p1.webp ... p6.webp dentro de assets/img/
 ============================================================== */
 .decoracion-fondo {
     --tam-base-decoracion: 112px;
