@@ -28,11 +28,11 @@ const db = getFirestore(app);
    únicamente los datos de UBICACION_EVENTO.
 ========================================================================== */
 const UBICACION_EVENTO = {
-    nombre: "Salón Casari",
-    direccion: "Esquina Privada Emiliano Zapata. Col. Roma, Santa Lucía del Camino, Oaxaca de Juárez, Oaxaca",
+    nombre: "Salón San Valentín 2CIENTOS3",
+    direccion: "San Valentín 203, FERROCARRIL, Santa Cecilia, 71243 Santa Lucía del Camino, Oaxaca",
 
     // Puedes pegar aquí una URL específica del lugar si deseas forzarla.
-    urlLugar: ""
+    urlLugar: "https://maps.app.goo.gl/PzfraPrhimSoeRyt6"
 };
 
 // Referencias de fase 1
@@ -455,7 +455,7 @@ function configurarUbicacionEvento() {
     iframe.loading = "lazy";
     iframe.referrerPolicy = "no-referrer-when-downgrade";
     iframe.allowFullscreen = true;
-    iframe.src = `https://www.google.com/maps?q=${encodeURIComponent(consulta)}&z=17&output=embed`;
+    iframe.src = "https://www.google.com/maps?cid=6724964433732261210&z=17&output=embed";
 
     mapaEvento.appendChild(iframe);
 
@@ -471,6 +471,11 @@ function configurarUbicacionEvento() {
  * mediante geo:, y en escritorio usa el navegador como respaldo.
  */
 function abrirEnMaps() {
+    if (UBICACION_EVENTO.urlLugar.trim()) {
+        window.open(UBICACION_EVENTO.urlLugar.trim(), "_blank", "noopener,noreferrer");
+        return;
+    }
+
     const consulta = `${UBICACION_EVENTO.nombre}, ${UBICACION_EVENTO.direccion}`;
     const consultaCodificada = encodeURIComponent(consulta);
     const urlWeb = UBICACION_EVENTO.urlLugar.trim() ||
